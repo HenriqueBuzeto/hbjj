@@ -155,10 +155,11 @@ export async function POST(request: Request) {
       include: {
         athleteProfile: true,
         jiuJitsuProfile: true,
-        activeCompetition: {
-          include: {
-            competition: true,
+        competitions: {
+          where: {
+            status: 'active',
           },
+          take: 1,
         },
       },
     })
@@ -185,6 +186,7 @@ export async function POST(request: Request) {
           userId,
           title: 'Nova conversa',
         },
+        include: { messages: true },
       })
     }
 
@@ -202,11 +204,11 @@ Dados do atleta:
 - Academia: ${user.jiuJitsuProfile?.academyName || 'N/A'}
 - Professor: ${user.jiuJitsuProfile?.coachName || 'N/A'}
 
-${user.activeCompetition ? `Competição ativa:
-- Nome: ${user.activeCompetition.competition.name}
-- Data: ${user.activeCompetition.competition.eventDate}
-- Modalidade: ${user.activeCompetition.competition.modality.join(', ')}
-- Limite de peso: ${user.activeCompetition.competition.weightLimitKg || 'N/A'} kg` : ''}
+${user.competitions && user.competitions.length > 0 ? `Competição ativa:
+- Nome: ${user.competitions[0].name}
+- Data: ${user.competitions[0].eventDate}
+- Modalidade: ${user.competitions[0].modality.join(', ')}
+- Limite de peso: ${user.competitions[0].weightLimitKg || 'N/A'} kg` : ''}
 
 IMPORTANTE: As recomendações são auxiliares e não substituem treinador, médico, nutricionista ou fisioterapeuta. Sempre consulte profissionais de saúde para orientação personalizada.
 

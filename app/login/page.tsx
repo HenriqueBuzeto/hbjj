@@ -4,9 +4,10 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { signIn } from '@/lib/auth'
+import AuthLayout from '@/components/auth/AuthLayout'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
-import Card from '@/components/ui/Card'
+import { Mail, Lock, AlertTriangle } from 'lucide-react'
 
 const LoginPage = () => {
   const router = useRouter()
@@ -28,7 +29,7 @@ const LoginPage = () => {
       })
 
       if (result?.error) {
-        setError('Email ou senha inválidos')
+        setError('E-mail ou senha inválidos')
       } else {
         router.push('/dashboard')
       }
@@ -40,98 +41,97 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
-      >
-        <Card className="p-8">
-          <motion.h1
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-3xl font-bold text-white mb-2 text-center"
-          >
-            HBJJ
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-zinc-400 text-center mb-8"
-          >
-            Saúde & Jiu-Jitsu
-          </motion.p>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Email
-              </label>
+    <AuthLayout title="Login" subtitle="Bem-vindo de volta! Insira suas credenciais.">
+      <form onSubmit={handleSubmit} className="space-y-5 mt-4 flex-1 flex flex-col justify-between">
+        <div className="space-y-4">
+          {/* Email field */}
+          <div>
+            <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-2">
+              E-mail
+            </label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-zinc-400 dark:text-zinc-500 pointer-events-none">
+                <Mail className="w-5 h-5" />
+              </span>
               <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
                 required
-                className="w-full"
+                className="pl-10 w-full rounded-2xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 focus:ring-amber-500 text-sm py-3"
               />
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Senha
-              </label>
+          {/* Password field */}
+          <div>
+            <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-2">
+              Senha
+            </label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-zinc-400 dark:text-zinc-500 pointer-events-none">
+                <Lock className="w-5 h-5" />
+              </span>
               <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full"
+                className="pl-10 w-full rounded-2xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 focus:ring-amber-500 text-sm py-3"
               />
             </div>
-
-            {error && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm"
+            
+            {/* Forgot password option */}
+            <div className="text-right mt-2">
+              <button
+                type="button"
+                onClick={() => router.push('/forgot-password')}
+                className="text-xs font-semibold text-amber-500 hover:text-amber-600 transition-colors"
               >
-                {error}
-              </motion.div>
-            )}
+                Esqueci minha senha
+              </button>
+            </div>
+          </div>
 
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold"
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-red-500/10 border border-red-500/30 text-red-650 dark:text-red-400 px-4 py-3 rounded-2xl text-xs flex items-center gap-2"
             >
-              {loading ? 'Entrando...' : 'Entrar'}
-            </Button>
-          </form>
+              <AlertTriangle className="w-4 h-4 shrink-0 text-red-500" />
+              <span>{error}</span>
+            </motion.div>
+          )}
+        </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="mt-6 text-center"
+        {/* Buttons and Footer */}
+        <div className="space-y-4 pt-6">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-amber-500 to-orange-650 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-orange-500/10 flex items-center justify-center gap-2"
           >
-            <p className="text-zinc-400 text-sm">
+            {loading ? 'Entrando...' : 'Entrar'}
+          </Button>
+
+          <div className="text-center pt-2">
+            <p className="text-zinc-500 dark:text-zinc-400 text-xs">
               Não tem uma conta?{' '}
               <button
+                type="button"
                 onClick={() => router.push('/signup')}
-                className="text-amber-500 hover:text-amber-400 font-semibold"
+                className="text-amber-500 hover:text-amber-600 font-bold transition-colors"
               >
                 Cadastre-se
               </button>
             </p>
-          </motion.div>
-        </Card>
-      </motion.div>
-    </div>
+          </div>
+        </div>
+      </form>
+    </AuthLayout>
   )
 }
 

@@ -9,6 +9,8 @@ const inter = Inter({
   display: 'swap',
 });
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'HBJJ - Saúde & Jiu-Jitsu',
   description: 'Preparação física, nutrição, rotina e treinos para atletas de Jiu-Jitsu.',

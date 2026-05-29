@@ -5,7 +5,11 @@ import type { NextRequest } from 'next/server'
 export default auth((req: any) => {
   const isLoggedIn = !!req.auth
   const isOnDashboard = req.nextUrl.pathname.startsWith('/dashboard')
-  const isOnAuthPage = req.nextUrl.pathname.startsWith('/login') || req.nextUrl.pathname.startsWith('/signup')
+  const isOnAuthPage = 
+    req.nextUrl.pathname.startsWith('/login') || 
+    req.nextUrl.pathname.startsWith('/signup') ||
+    req.nextUrl.pathname.startsWith('/forgot-password') ||
+    req.nextUrl.pathname.startsWith('/reset-password')
 
   if (isOnDashboard) {
     if (isLoggedIn) return

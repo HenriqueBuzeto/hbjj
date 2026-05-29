@@ -107,13 +107,13 @@ async function checkBadgeUnlocks(userId: string, profile: any) {
 
     switch (badge.requirementType) {
       case 'level':
-        shouldUnlock = profile.level >= badge.requirementValue
+        shouldUnlock = badge.requirementValue !== null && profile.level >= badge.requirementValue
         break
       case 'total_xp':
-        shouldUnlock = profile.totalXp >= badge.requirementValue
+        shouldUnlock = badge.requirementValue !== null && profile.totalXp >= badge.requirementValue
         break
       case 'streak':
-        shouldUnlock = profile.longestStreak >= badge.requirementValue
+        shouldUnlock = badge.requirementValue !== null && profile.longestStreak >= badge.requirementValue
         break
       default:
         break
