@@ -712,14 +712,21 @@ Retorna a competição ativa do usuário.
 SELECT get_active_competition('user_id_here');
 ```
 
-### `calculate_competition_days_remaining(p_competition_id TEXT)`
+**Nota:** Coluna `eventDate` usa aspas duplas pois é camelCase no PostgreSQL.
+
+### `calculate_competition_days_remaining(p_event_date TIMESTAMP)`
 Calcula os dias restantes até a competição.
+
+**Parâmetros:**
+- `p_event_date`: Timestamp da data do evento
 
 **Retorno:** INTEGER - Dias restantes ou NULL
 
+**Nota:** Recebe event_date diretamente para funcionar em BEFORE INSERT onde o ID ainda não existe.
+
 **Uso:**
 ```sql
-SELECT calculate_competition_days_remaining('competition_id_here');
+SELECT calculate_competition_days_remaining('2024-12-31'::timestamp);
 ```
 
 ## Triggers (Gatilhos)
@@ -809,7 +816,7 @@ Remove logs antigos para manter performance do banco.
 - Deleta logs de hidratação antigos
 - Deleta logs de refeições antigos
 - Deleta logs de prontidão antigos
-- Deleta logs de progresso corporal antigos (1 ano)
+- **NÃO deleta body_progress_logs** - são dados críticos do atleta
 - Deleta recomendações de IA expiradas
 
 **Uso:**
@@ -909,7 +916,7 @@ SELECT * FROM today_missions_summary;
 - **Logs de hidratação:** 90 dias
 - **Logs de refeições:** 90 dias
 - **Logs de prontidão:** 90 dias
-- **Logs de progresso corporal:** 1 ano
+- **Logs de progresso corporal:** Mantidos indefinidamente (dados críticos do atleta)
 - **Recomendações de IA:** Expiração definida por campo
 - **Conversas de IA:** Mantidas indefinidamente
 - **XP Events:** Mantidos indefinidamente (histórico de gamificação)
@@ -919,7 +926,8 @@ SELECT * FROM today_missions_summary;
 ### Soft Delete
 - Tabela `users` tem campo `deletedAt`
 - Aplicação deve sempre filtrar `WHERE deletedAt IS NULL`
-- Trigger `trigger_soft_delete_user` marca registros relacionados
+- Trigger `trigger_soft_delete_user` marca quando usuário é deletado
+- Cascade delete lógico é responsabilidade da aplicação para evitar perda de dados
 
 ### Cascade Deletes
 - Relações com `onDelete: Cascade` removem registros automaticamente
@@ -936,6 +944,10 @@ SELECT * FROM today_missions_summary;
 - Readiness log por usuário e data
 - Daily mission por usuário, data e título
 - Camp week por camp e número da semana
+
+### Seed em Produção
+- O seed verifica `NODE_ENV === 'production'` e não executa em produção
+- Usuário de teste `test@hbjj.com` nunca será criado em produção
 
 ## Como Executar as Migrations
 
