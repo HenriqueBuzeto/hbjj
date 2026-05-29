@@ -1,5 +1,9 @@
 import Image from 'next/image'
 
+export const runtime = 'nodejs'
+
+export const size = { width: 32, height: 32 }
+
 const icon = () => {
   return (
     <Image

@@ -4,6 +4,8 @@ import { generateDailyMissions } from '@/lib/gamification'
 import { startOfDay, endOfDay } from 'date-fns'
 import { auth } from '@/lib/auth'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: Request) {
   try {
     const session = await auth()
