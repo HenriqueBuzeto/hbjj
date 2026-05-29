@@ -115,14 +115,16 @@ async function main() {
   // ============================================
   // SEED TEST USER
   // ============================================
-  const passwordHash = await bcrypt.hash('test123', 12)
+  const testPassword = process.env.SEED_TEST_PASSWORD || 'changeme123'
+  const testEmail = process.env.SEED_TEST_EMAIL || 'dev@example.com'
+  const passwordHash = await bcrypt.hash(testPassword, 12)
   
   const testUser = await prisma.user.upsert({
-    where: { email: 'test@hbjj.com' },
+    where: { email: testEmail },
     update: {},
     create: {
-      email: 'test@hbjj.com',
-      name: 'Test Athlete',
+      email: testEmail,
+      name: 'Dev Test User',
       passwordHash,
       role: 'athlete',
       plan: 'free',
@@ -492,8 +494,8 @@ async function main() {
 
   console.log('🎉 Seed completed successfully!')
   console.log('📧 Test user credentials:')
-  console.log('   Email: test@hbjj.com')
-  console.log('   Password: test123')
+  console.log(`   Email: ${testEmail}`)
+  console.log(`   Password: ${testPassword}`)
 }
 
 main()
