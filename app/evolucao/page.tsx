@@ -62,11 +62,6 @@ const EvolucaoPage = () => {
     },
   });
 
-  if (!session) {
-    router.push('/login');
-    return null;
-  }
-
   const progressLogs = progressData?.progressLogs || [];
 
   // Athlete weight progression mock
@@ -80,6 +75,19 @@ const EvolucaoPage = () => {
     { day: 'Dom', weight: user.weight },
   ];
 
+  const currentPhotos = useMemo(() => {
+    return user.photos?.find(p => p.week === selectedPhotoWeek) || { week: selectedPhotoWeek };
+  }, [user.photos, selectedPhotoWeek]);
+
+  const basePhotos = useMemo(() => {
+    return user.photos?.find(p => p.week === 1) || { week: 1 };
+  }, [user.photos]);
+
+  if (!session) {
+    router.push('/login');
+    return null;
+  }
+
   const handleSimulatePhotoUpload = (type: 'front' | 'side' | 'back') => {
     // Simulate real local upload of photos
     const urls = {
@@ -89,14 +97,6 @@ const EvolucaoPage = () => {
     };
     addEvolutionPhoto(type, urls[type], 2); // Save to Week 2
   };
-
-  const currentPhotos = useMemo(() => {
-    return user.photos?.find(p => p.week === selectedPhotoWeek) || { week: selectedPhotoWeek };
-  }, [user.photos, selectedPhotoWeek]);
-
-  const basePhotos = useMemo(() => {
-    return user.photos?.find(p => p.week === 1) || { week: 1 };
-  }, [user.photos]);
 
   return (
     <MainLayout>

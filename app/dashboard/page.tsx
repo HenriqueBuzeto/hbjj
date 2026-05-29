@@ -77,26 +77,6 @@ const DashboardPage = () => {
   const gamification = gamificationData?.profile;
   const readiness = readinessData?.readinessLog;
 
-  // Loading state
-  if (status === 'loading' || isLoadingUser) {
-    return (
-      <MainLayout>
-        <div className="p-5 flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" />
-        </div>
-      </MainLayout>
-    );
-  }
-
-  // Redirect se não autenticado
-  if (!session) {
-    router.push('/login');
-    return null;
-  }
-
-  // If user doesn't have a belt, onboarding is needed
-  const needsOnboarding = !user?.jiuJitsuProfile?.belt;
-
   // Camp Phase calculations
   const campInfo = useMemo(() => {
     if (!camp || !camp.competition) return null;
@@ -164,6 +144,26 @@ const DashboardPage = () => {
       overall
     };
   }, [readiness, user, camp]);
+
+  // Loading state
+  if (status === 'loading' || isLoadingUser) {
+    return (
+      <MainLayout>
+        <div className="p-5 flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  // Redirect se não autenticado
+  if (!session) {
+    router.push('/login');
+    return null;
+  }
+
+  // If user doesn't have a belt, onboarding is needed
+  const needsOnboarding = !user?.jiuJitsuProfile?.belt;
 
   return (
     <MainLayout>

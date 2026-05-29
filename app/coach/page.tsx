@@ -50,15 +50,15 @@ const CoachPage = () => {
     },
   });
 
-  if (!session) {
-    router.push('/login');
-    return null;
-  }
-
   // Auto scroll to bottom
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [user.chatHistory]);
+
+  if (!session) {
+    router.push('/login');
+    return null;
+  }
 
   const handleSend = (textToSend: string) => {
     if (!textToSend.trim()) return;
