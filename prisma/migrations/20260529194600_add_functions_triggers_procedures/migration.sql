@@ -254,7 +254,7 @@ BEGIN
             -- Increment streak
             IF v_last_activity_date != CURRENT_DATE THEN
                 v_current_streak := v_current_streak + 1;
-            END IF
+            END IF;
         ELSE
             -- Reset streak
             v_current_streak := 1;
