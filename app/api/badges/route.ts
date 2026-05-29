@@ -1,0 +1,42 @@
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { auth } from '@/lib/auth'
+
+export async function GET(request: Request) {
+  try {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Não autenticado' },
+        { status: 401 }
+      )
+    }
+
+    const userId = session.user.id
+
+    // Get all badges
+    const allBadges = await prisma.badge.findMany()
+
+    // Get user's earned badges
+    const userBadges = await prisma.userBadge.findMany({
+      where: { userId },
+      select: { badgeId: true },
+    })
+    const earnedBadgeIds = new Set(userBadges.map((ub: any) => ub.badgeId))
+
+    // Mark badges as earned or not
+    const badges = allBadges.map((badge: any) => ({
+      ...badge,
+      earned: earnedBadgeIds.has(badge.id),
+    }))
+
+    return NextResponse.json({ badges })
+  } catch (error: any) {
+    console.error('Get badges error:', error)
+    return NextResponse.json(
+      { error: 'Erro ao buscar badges' },
+      { status: 500 }
+    )
+  }
+}

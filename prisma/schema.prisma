@@ -1,0 +1,587 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTH
+// ============================================
+
+model User {
+  id           String    @id @default(cuid())
+  name         String?
+  email        String    @unique
+  emailVerified DateTime?
+  image        String?
+  passwordHash String?
+  role         String    @default("athlete") // athlete, admin
+  plan         String    @default("free") // free, pro, elite
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  accounts      Account[]
+  sessions      Session[]
+  athleteProfile AthleteProfile?
+  jiuJitsuProfile JiuJitsuProfile?
+  competitions  Competition[]
+  trainingCamps TrainingCamp[]
+  nutritionTargets NutritionTargets?
+  mealLogs      MealLog[]
+  hydrationLogs HydrationLog[]
+  bodyProgressLogs BodyProgressLog[]
+  dailyMissions DailyMission[]
+  gamificationProfile GamificationProfile?
+  xpEvents      XPEvent[]
+  userBadges    UserBadge[]
+  readinessLogs ReadinessLog[]
+  aiConversations AIConversation[]
+  aiRecommendations AIRecommendation[]
+  videoFavorites UserVideoFavorite[]
+  trainingSessions TrainingSession[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ============================================
+// ATHLETE PROFILE
+// ============================================
+
+model AthleteProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  age             Int?
+  heightCm        Int?
+  currentWeightKg Float?
+  targetWeightKg  Float?
+  city            String?
+  sex             String?
+  mainGoal        String?  // lose, maintain, gain, performance
+  intensityLevel  String?  // light, moderate, heavy, competitor
+  isCompetitor    Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("athlete_profiles")
+}
+
+// ============================================
+// JIU-JITSU PROFILE
+// ============================================
+
+model JiuJitsuProfile {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  belt                 String?  // white, blue, purple, brown, black
+  teamName             String?
+  academyName          String?
+  coachName            String?
+  yearsTraining        Int?
+  trainsGi             Boolean  @default(true)
+  trainsNogi           Boolean  @default(false)
+  weeklySessions       Int?
+  preferredTrainingTime String?
+  weightCategory       String?
+  fightingStyleNotes   String? @db.Text
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("jiu_jitsu_profiles")
+}
+
+// ============================================
+// COMPETITIONS
+// ============================================
+
+model Competition {
+  id               String   @id @default(cuid())
+  userId           String
+  name             String
+  organization     String?
+  eventDate        DateTime
+  modality         String[] // Gi, No-Gi, etc.
+  currentWeightKg  Float?
+  targetWeightKg   Float?
+  weightLimitKg    Float?
+  daysRemaining    Int?
+  status           String   @default("upcoming") // upcoming, active, completed, cancelled
+  priority         String   @default("medium") // low, medium, high
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trainingCamps TrainingCamp[]
+
+  @@index([userId])
+  @@index([eventDate])
+  @@index([status])
+  @@map("competitions")
+}
+
+// ============================================
+// TRAINING CAMPS
+// ============================================
+
+model TrainingCamp {
+  id            String   @id @default(cuid())
+  userId        String
+  competitionId String?
+  name          String
+  startDate     DateTime
+  endDate       DateTime
+  currentPhase  String?
+  totalWeeks    Int      @default(8)
+  currentWeek   Int      @default(1)
+  status        String   @default("planned") // planned, active, completed, cancelled
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  competition   Competition? @relation(fields: [competitionId], references: [id])
+  campWeeks    CampWeek[]
+  trainingSessions TrainingSession[]
+
+  @@index([userId])
+  @@index([competitionId])
+  @@index([status])
+  @@index([startDate])
+  @@map("training_camps")
+}
+
+model CampWeek {
+  id            String   @id @default(cuid())
+  campId        String
+  weekNumber    Int
+  phaseName     String?  // base, build, peak, taper
+  goal          String?  @db.Text
+  volumeLevel   String?  // low, medium, high
+  intensityLevel String?
+  notes         String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  camp TrainingCamp @relation(fields: [campId], references: [id], onDelete: Cascade)
+
+  @@unique([campId, weekNumber])
+  @@map("camp_weeks")
+}
+
+// ============================================
+// TRAINING SESSIONS
+// ============================================
+
+model TrainingSession {
+  id              String   @id @default(cuid())
+  userId          String
+  campId          String?
+  title           String
+  type            String   // drilling, sparring, conditioning, technique
+  modality        String?  // gi, nogi
+  scheduledDate   DateTime
+  scheduledTime   String?
+  durationMinutes Int?
+  intensity       String?  // low, medium, high
+  status          String   @default("scheduled") // scheduled, completed, skipped, cancelled
+  caloriesEstimate Int?
+  notes           String?  @db.Text
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  camp     TrainingCamp?  @relation(fields: [campId], references: [id])
+  exercises TrainingExercise[]
+
+  @@index([userId])
+  @@index([campId])
+  @@index([scheduledDate])
+  @@index([status])
+  @@map("training_sessions")
+}
+
+model TrainingExercise {
+  id                 String   @id @default(cuid())
+  trainingSessionId  String
+  name               String
+  sets               Int?
+  reps               Int?
+  durationSeconds    Int?
+  restSeconds        Int?
+  loadKg             Float?
+  instructions       String?  @db.Text
+  orderIndex         Int
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  trainingSession TrainingSession @relation(fields: [trainingSessionId], references: [id], onDelete: Cascade)
+
+  @@map("training_exercises")
+}
+
+// ============================================
+// NUTRITION
+// ============================================
+
+model NutritionTargets {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  caloriesTarget Int?
+  proteinTargetG Float?
+  carbsTargetG   Float?
+  fatTargetG     Float?
+  waterTargetMl  Int?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("nutrition_targets")
+}
+
+model MealLog {
+  id             String   @id @default(cuid())
+  userId         String
+  date           DateTime @db.Date
+  mealType       String   // breakfast, lunch, snack, dinner
+  totalCalories  Int      @default(0)
+  totalProteinG  Float    @default(0)
+  totalCarbsG    Float    @default(0)
+  totalFatG      Float    @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items MealItem[]
+
+  @@unique([userId, date, mealType])
+  @@index([userId])
+  @@index([date])
+  @@map("meal_logs")
+}
+
+model MealItem {
+  id         String   @id @default(cuid())
+  mealLogId  String
+  name       String
+  quantity   Float?
+  unit       String?
+  calories   Int      @default(0)
+  proteinG   Float    @default(0)
+  carbsG     Float    @default(0)
+  fatG       Float    @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  mealLog MealLog @relation(fields: [mealLogId], references: [id], onDelete: Cascade)
+
+  @@map("meal_items")
+}
+
+model HydrationLog {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @db.Date
+  amountMl  Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+  @@map("hydration_logs")
+}
+
+// ============================================
+// BODY PROGRESS & READINESS
+// ============================================
+
+model BodyProgressLog {
+  id             String   @id @default(cuid())
+  userId         String
+  date           DateTime @db.Date
+  weightKg       Float?
+  waistCm        Float?
+  chestCm        Float?
+  armCm          Float?
+  legCm          Float?
+  cardioScore    Int?
+  strengthScore  Int?
+  mobilityScore  Int?
+  recoveryScore  Int?
+  fatigueLevel   Int?
+  sleepHours     Float?
+  notes          String?  @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photos ProgressPhoto[]
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+  @@map("body_progress_logs")
+}
+
+model ProgressPhoto {
+  id           String   @id @default(cuid())
+  userId       String
+  progressLogId String
+  photoType    String   // front, side, back
+  imageUrl     String
+  storageKey   String
+  createdAt    DateTime @default(now())
+
+  progressLog BodyProgressLog @relation(fields: [progressLogId], references: [id], onDelete: Cascade)
+
+  @@map("progress_photos")
+}
+
+model ReadinessLog {
+  id            String   @id @default(cuid())
+  userId        String
+  date          DateTime @db.Date
+  gasScore      Int?
+  strengthScore Int?
+  mobilityScore Int?
+  recoveryScore Int?
+  weightScore   Int?
+  overallScore  Int?
+  notes         String?  @db.Text
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+  @@map("readiness_logs")
+}
+
+// ============================================
+// GAMIFICATION
+// ============================================
+
+model DailyMission {
+  id          String   @id @default(cuid())
+  userId      String
+  date        DateTime @db.Date
+  title       String
+  description String?  @db.Text
+  category    String   // water, food, exercise, recovery
+  xpReward    Int      @default(0)
+  status      String   @default("pending") // pending, completed, skipped
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date, title])
+  @@index([userId])
+  @@index([date])
+  @@index([status])
+  @@map("daily_missions")
+}
+
+model GamificationProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  level           Int      @default(1)
+  totalXp         Int      @default(0)
+  currentStreak   Int      @default(0)
+  longestStreak   Int      @default(0)
+  lastActivityDate DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  xpEvents  XPEvent[]
+  userBadges UserBadge[]
+
+  @@map("gamification_profiles")
+}
+
+model XPEvent {
+  id                  String   @id @default(cuid())
+  userId              String
+  gamificationProfileId String?
+  sourceType          String   // training, nutrition, hydration, mission, camp, checkin
+  sourceId            String?
+  xpAmount            Int
+  description         String?
+  createdAt           DateTime @default(now())
+
+  user               User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gamificationProfile GamificationProfile? @relation(fields: [gamificationProfileId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([gamificationProfileId])
+  @@index([createdAt])
+  @@map("xp_events")
+}
+
+model Badge {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  description     String   @db.Text
+  icon            String?
+  requirementType String?  // streak, xp, camps, missions
+  requirementValue Int?
+  createdAt       DateTime @default(now())
+
+  userBadges UserBadge[]
+
+  @@map("badges")
+}
+
+model UserBadge {
+  id                  String   @id @default(cuid())
+  userId              String
+  gamificationProfileId String?
+  badgeId             String
+  earnedAt            DateTime @default(now())
+
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge               Badge                 @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  gamificationProfile GamificationProfile? @relation(fields: [gamificationProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}
+
+// ============================================
+// AI COACH
+// ============================================
+
+model AIConversation {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages AIMessage[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("ai_conversations")
+}
+
+model AIMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  role           String   // user, assistant, system
+  content        String   @db.Text
+  tokensUsed     Int?
+  createdAt      DateTime @default(now())
+
+  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("ai_messages")
+}
+
+model AIRecommendation {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   // week_plan, nutrition, recovery, technique
+  title       String
+  content     String   @db.Text
+  contextJson Json?
+  modelUsed   String?
+  tokensUsed  Int?
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ai_recommendations")
+}
+
+// ============================================
+// YOUTUBE VIDEOS
+// ============================================
+
+model YoutubeVideo {
+  id             String   @id @default(cuid())
+  title          String
+  channelName    String?
+  youtubeVideoId String   @unique
+  url            String
+  thumbnailUrl   String?
+  category       String?  // technique, drill, strength, mobility
+  beltLevel      String?  // white, blue, purple, brown, black
+  modality       String?  // gi, nogi
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  userFavorites UserVideoFavorite[]
+
+  @@map("youtube_videos")
+}
+
+model UserVideoFavorite {
+  id            String   @id @default(cuid())
+  userId        String
+  youtubeVideoId String
+  createdAt     DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  youtubeVideo YoutubeVideo @relation(fields: [youtubeVideoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, youtubeVideoId])
+  @@map("user_video_favorites")
+}
