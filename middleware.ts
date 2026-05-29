@@ -15,11 +15,17 @@ export default auth((req: any) => {
 
   if (isOnDashboard) {
     if (isLoggedIn) return
-    return NextResponse.redirect(new URL('/login', req.nextUrl))
+    const url = req.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
   }
 
   if (isOnAuthPage) {
-    if (isLoggedIn) return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
+    if (isLoggedIn) {
+      const url = req.nextUrl.clone()
+      url.pathname = '/dashboard'
+      return NextResponse.redirect(url)
+    }
   }
 })
 
