@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/auth'
 import { rateLimit, RATE_LIMIT_CONFIGS } from '@/lib/rate-limit'
@@ -222,39 +223,80 @@ Responda de forma motivadora, técnica e prática. Use terminologia de Jiu-Jitsu
     // Add new user message
     messages.push({ role: 'user', content: sanitizedMessage })
 
-    // Initialize OpenAI client
-    if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json(
-        { error: 'Serviço de IA não configurado' },
-        { status: 503 }
-      )
-    }
-
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    })
-
-    // Call OpenAI
+    // Initialize AI client based on provider
+    const aiProvider = process.env.AI_PROVIDER || 'openai'
     let assistantMessage: string
     let promptTokens: number | undefined = undefined
     let completionTokens: number | undefined = undefined
-    
-    try {
-      const completion = await openai.chat.completions.create({
-        model: process.env.AI_MODEL || 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...messages,
-        ],
-        max_tokens: parseInt(process.env.AI_MAX_TOKENS || '1000'),
+
+    if (aiProvider === 'google') {
+      // Google AI Studio (Gemini)
+      if (!process.env.GOOGLE_AI_API_KEY) {
+        return NextResponse.json(
+          { error: 'Serviço de IA Google não configurado' },
+          { status: 503 }
+        )
+      }
+
+      const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY)
+      const model = genAI.getGenerativeModel({ 
+        model: process.env.AI_MODEL || 'gemini-1.5-flash',
+        generationConfig: {
+          maxOutputTokens: parseInt(process.env.AI_MAX_TOKENS || '1000'),
+        }
       })
 
-      assistantMessage = completion.choices[0].message.content || ''
-      promptTokens = completion.usage?.prompt_tokens
-      completionTokens = completion.usage?.completion_tokens
-    } catch (error) {
-      console.error('OpenAI API error:', error)
-      assistantMessage = getFallbackResponse(sanitizedMessage)
+      try {
+        // Convert OpenAI format to Gemini format
+        const geminiMessages = messages.map((msg: any) => ({
+          role: msg.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: msg.content }]
+        }))
+
+        const result = await model.generateContent({
+          contents: [
+            { role: 'user', parts: [{ text: systemPrompt }] },
+            ...geminiMessages
+          ]
+        })
+
+        assistantMessage = result.response.text()
+        promptTokens = result.response.usageMetadata?.promptTokenCount
+        completionTokens = result.response.usageMetadata?.candidatesTokenCount
+      } catch (error) {
+        console.error('Google AI API error:', error)
+        assistantMessage = getFallbackResponse(sanitizedMessage)
+      }
+    } else {
+      // OpenAI
+      if (!process.env.OPENAI_API_KEY) {
+        return NextResponse.json(
+          { error: 'Serviço de IA OpenAI não configurado' },
+          { status: 503 }
+        )
+      }
+
+      const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      })
+
+      try {
+        const completion = await openai.chat.completions.create({
+          model: process.env.AI_MODEL || 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...messages,
+          ],
+          max_tokens: parseInt(process.env.AI_MAX_TOKENS || '1000'),
+        })
+
+        assistantMessage = completion.choices[0].message.content || ''
+        promptTokens = completion.usage?.prompt_tokens
+        completionTokens = completion.usage?.completion_tokens
+      } catch (error) {
+        console.error('OpenAI API error:', error)
+        assistantMessage = getFallbackResponse(sanitizedMessage)
+      }
     }
 
     // Save messages to database
