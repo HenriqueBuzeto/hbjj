@@ -60,13 +60,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
+        console.log('[Auth] Login attempt for email:', credentials?.email)
+        
         if (!credentials?.email || !credentials?.password) {
+          console.log('[Auth] Missing credentials')
           return null
         }
 
         const user = await getUserByEmail(credentials.email as string)
+        console.log('[Auth] User found:', !!user)
 
         if (!user || !user.passwordHash) {
+          console.log('[Auth] No user or password hash')
           return null
         }
 
@@ -74,11 +79,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           credentials.password as string,
           user.passwordHash
         )
+        console.log('[Auth] Password valid:', isValid)
 
         if (!isValid) {
           return null
         }
 
+        console.log('[Auth] Login successful for:', user.email)
         return {
           id: user.id,
           email: user.email,

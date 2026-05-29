@@ -21,6 +21,8 @@ const LoginPage = () => {
     setError('')
     setLoading(true)
 
+    console.log('[Login] Attempting login with email:', email)
+
     try {
       const result = await signIn('credentials', {
         email,
@@ -28,12 +30,17 @@ const LoginPage = () => {
         redirect: false,
       })
 
+      console.log('[Login] Sign in result:', result)
+
       if (result?.error) {
+        console.error('[Login] Sign in error:', result.error)
         setError('E-mail ou senha inválidos')
       } else {
+        console.log('[Login] Login successful, redirecting to dashboard')
         router.push('/dashboard')
       }
     } catch (err) {
+      console.error('[Login] Login error:', err)
       setError('Erro ao fazer login')
     } finally {
       setLoading(false)
