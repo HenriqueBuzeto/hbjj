@@ -223,6 +223,18 @@ Responda de forma motivadora, técnica e prática. Use terminologia de Jiu-Jitsu
     // Add new user message
     messages.push({ role: 'user', content: sanitizedMessage })
 
+    // Initialize OpenAI client
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { error: 'Serviço de IA não configurado' },
+        { status: 503 }
+      )
+    }
+
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+
     // Call OpenAI
     let assistantMessage: string
     let promptTokens: number | undefined = undefined
