@@ -43,7 +43,7 @@ BEGIN
     SELECT EXISTS(
         SELECT 1 
         FROM daily_missions 
-        WHERE user_id = p_user_id 
+        WHERE userId = p_user_id 
         AND date = CURRENT_DATE 
         AND status = 'completed'
     ) INTO v_has_activity;
@@ -65,7 +65,7 @@ BEGIN
         SELECT EXISTS(
             SELECT 1 
             FROM daily_missions 
-            WHERE user_id = p_user_id 
+            WHERE userId = p_user_id 
             AND date = v_check_date 
             AND status = 'completed'
         ) INTO v_has_activity;
@@ -126,32 +126,32 @@ BEGIN
     END IF;
     
     -- Get user stats based on badge type
-    CASE v_badge.requirement_type
+    CASE v_badge.requirementType
         WHEN 'streak' THEN
-            SELECT current_streak INTO v_user_stats
+            SELECT currentStreak INTO v_user_stats
             FROM gamification_profiles
-            WHERE user_id = p_user_id;
-            v_qualified := v_user_stats.current_streak >= v_badge.requirement_value;
+            WHERE userId = p_user_id;
+            v_qualified := v_user_stats.currentStreak >= v_badge.requirementValue;
             
         WHEN 'xp' THEN
-            SELECT total_xp INTO v_user_stats
+            SELECT totalXp INTO v_user_stats
             FROM gamification_profiles
-            WHERE user_id = p_user_id;
-            v_qualified := v_user_stats.total_xp >= v_badge.requirement_value;
+            WHERE userId = p_user_id;
+            v_qualified := v_user_stats.totalXp >= v_badge.requirementValue;
             
         WHEN 'camps' THEN
             SELECT COUNT(*) INTO v_user_stats
             FROM training_camps
-            WHERE user_id = p_user_id
+            WHERE userId = p_user_id
             AND status = 'completed';
-            v_qualified := v_user_stats.count >= v_badge.requirement_value;
+            v_qualified := v_user_stats.count >= v_badge.requirementValue;
             
         WHEN 'missions' THEN
             SELECT COUNT(*) INTO v_user_stats
             FROM daily_missions
-            WHERE user_id = p_user_id
+            WHERE userId = p_user_id
             AND status = 'completed';
-            v_qualified := v_user_stats.count >= v_badge.requirement_value;
+            v_qualified := v_user_stats.count >= v_badge.requirementValue;
             
         ELSE
             v_qualified := FALSE;
@@ -169,9 +169,9 @@ DECLARE
 BEGIN
     SELECT id INTO v_competition_id
     FROM competitions
-    WHERE user_id = p_user_id
+    WHERE userId = p_user_id
     AND status IN ('upcoming', 'active')
-    ORDER BY eventDate ASC
+    ORDER BY "eventDate" ASC
     LIMIT 1;
     
     RETURN v_competition_id;
@@ -179,21 +179,16 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Function: Calculate competition days remaining
-CREATE OR REPLACE FUNCTION calculate_competition_days_remaining(p_competition_id TEXT)
+CREATE OR REPLACE FUNCTION calculate_competition_days_remaining(p_event_date TIMESTAMP)
 RETURNS INTEGER AS $$
 DECLARE
     v_days_remaining INTEGER;
-    v_event_date DATE;
 BEGIN
-    SELECT event_date::DATE INTO v_event_date
-    FROM competitions
-    WHERE id = p_competition_id;
-    
-    IF v_event_date IS NULL THEN
+    IF p_event_date IS NULL THEN
         RETURN NULL;
     END IF;
     
-    v_days_remaining := v_event_date - CURRENT_DATE;
+    v_days_remaining := p_event_date::DATE - CURRENT_DATE;
     RETURN v_days_remaining;
 END;
 $$ LANGUAGE plpgsql;
@@ -211,7 +206,7 @@ DECLARE
 BEGIN
     IF (TG_OP = 'INSERT') THEN
         -- Calculate new total XP
-        v_total_xp := calculate_user_total_xp(NEW.user_id);
+        v_total_xp := calculate_user_total_xp(NEW.userId);
         
         -- Calculate new level
         v_new_level := calculate_user_level(v_total_xp);
@@ -219,10 +214,10 @@ BEGIN
         -- Update gamification profile
         UPDATE gamification_profiles
         SET 
-            total_xp = v_total_xp,
+            totalXp = v_total_xp,
             level = v_new_level,
-            updated_at = NOW()
-        WHERE user_id = NEW.user_id;
+            updatedAt = NOW()
+        WHERE userId = NEW.userId;
         
         RETURN NEW;
     END IF;
@@ -246,10 +241,10 @@ DECLARE
 BEGIN
     IF (TG_OP = 'UPDATE' AND NEW.status = 'completed' AND OLD.status != 'completed') THEN
         -- Get current gamification profile
-        SELECT current_streak, longest_streak, last_activity_date
+        SELECT currentStreak, longestStreak, lastActivityDate
         INTO v_current_streak, v_longest_streak, v_last_activity_date
         FROM gamification_profiles
-        WHERE user_id = NEW.user_id;
+        WHERE userId = NEW.userId;
         
         -- Check if activity was yesterday or today
         IF v_last_activity_date IS NULL OR 
@@ -272,11 +267,11 @@ BEGIN
         -- Update profile
         UPDATE gamification_profiles
         SET 
-            current_streak = v_current_streak,
-            longest_streak = v_longest_streak,
-            last_activity_date = CURRENT_DATE,
-            updated_at = NOW()
-        WHERE user_id = NEW.user_id;
+            currentStreak = v_current_streak,
+            longestStreak = v_longest_streak,
+            lastActivityDate = CURRENT_DATE,
+            updatedAt = NOW()
+        WHERE userId = NEW.userId;
         
         RETURN NEW;
     END IF;
@@ -294,17 +289,17 @@ EXECUTE FUNCTION update_streak_on_mission_complete();
 CREATE OR REPLACE FUNCTION auto_calculate_readiness_score()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.gas_score IS NOT NULL AND 
-       NEW.strength_score IS NOT NULL AND 
-       NEW.mobility_score IS NOT NULL AND 
-       NEW.recovery_score IS NOT NULL AND 
-       NEW.weight_score IS NOT NULL THEN
-        NEW.overall_score := calculate_readiness_score(
-            NEW.gas_score,
-            NEW.strength_score,
-            NEW.mobility_score,
-            NEW.recovery_score,
-            NEW.weight_score
+    IF NEW.gasScore IS NOT NULL AND 
+       NEW.strengthScore IS NOT NULL AND 
+       NEW.mobilityScore IS NOT NULL AND 
+       NEW.recoveryScore IS NOT NULL AND 
+       NEW.weightScore IS NOT NULL THEN
+        NEW.overallScore := calculate_readiness_score(
+            NEW.gasScore,
+            NEW.strengthScore,
+            NEW.mobilityScore,
+            NEW.recoveryScore,
+            NEW.weightScore
         );
     END IF;
     
@@ -321,8 +316,8 @@ EXECUTE FUNCTION auto_calculate_readiness_score();
 CREATE OR REPLACE FUNCTION update_competition_days_remaining()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF TG_OP = 'INSERT' OR (TG_OP = 'UPDATE' AND NEW.event_date != OLD.event_date) THEN
-        NEW.days_remaining := calculate_competition_days_remaining(NEW.id);
+    IF TG_OP = 'INSERT' OR (TG_OP = 'UPDATE' AND NEW."eventDate" != OLD."eventDate") THEN
+        NEW.daysRemaining := calculate_competition_days_remaining(NEW."eventDate");
     END IF;
     
     RETURN NEW;
@@ -338,10 +333,9 @@ EXECUTE FUNCTION update_competition_days_remaining();
 CREATE OR REPLACE FUNCTION soft_delete_user()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF TG_OP = 'UPDATE' AND NEW.deleted_at IS NOT NULL AND OLD.deleted_at IS NULL THEN
-        -- Mark related records as deleted (if they have deleted_at field)
-        -- Note: This is a soft delete - records remain in DB but are marked as deleted
-        -- Application logic should filter out deleted records
+    IF TG_OP = 'UPDATE' AND NEW.deletedAt IS NOT NULL AND OLD.deletedAt IS NULL THEN
+        -- Mark related records - application should filter deletedAt IS NULL
+        -- Note: Cascade delete is handled by application logic to avoid data loss
         NULL;
     END IF;
     
@@ -365,31 +359,37 @@ AS $$
 DECLARE
     v_badge RECORD;
     v_qualified BOOLEAN;
+    v_gamification_profile_id TEXT;
 BEGIN
+    -- Get gamification profile ID
+    SELECT id INTO v_gamification_profile_id
+    FROM gamification_profiles
+    WHERE userId = p_user_id;
+    
     -- Loop through all badges
     FOR v_badge IN SELECT * FROM badges LOOP
         -- Check if user already has this badge
         IF NOT EXISTS(
             SELECT 1 FROM user_badges 
-            WHERE user_id = p_user_id AND badge_id = v_badge.id
+            WHERE userId = p_user_id AND badgeId = v_badge.id
         ) THEN
             -- Check if user qualifies
             v_qualified := user_qualifies_for_badge(p_user_id, v_badge.id);
             
             IF v_qualified THEN
-                -- Award badge
-                INSERT INTO user_badges (user_id, badge_id, gamification_profile_id)
+                -- Award badge (IDs will be generated by DEFAULT cuid())
+                INSERT INTO user_badges (userId, badgeId, gamificationProfileId)
                 VALUES (
                     p_user_id, 
                     v_badge.id, 
-                    (SELECT id FROM gamification_profiles WHERE user_id = p_user_id)
+                    v_gamification_profile_id
                 );
                 
-                -- Log XP event for badge
-                INSERT INTO xp_events (user_id, gamification_profile_id, source_type, source_id, xp_amount, description)
+                -- Log XP event for badge (ID will be generated by DEFAULT cuid())
+                INSERT INTO xp_events (userId, gamificationProfileId, sourceType, sourceId, xpAmount, description)
                 VALUES (
                     p_user_id,
-                    (SELECT id FROM gamification_profiles WHERE user_id = p_user_id),
+                    v_gamification_profile_id,
                     'badge',
                     v_badge.id,
                     50, -- 50 XP for earning a badge
@@ -418,13 +418,11 @@ BEGIN
     DELETE FROM readiness_logs
     WHERE date < CURRENT_DATE - INTERVAL '1 day' * p_days_to_keep;
     
-    -- Delete old body progress logs (keep these longer - 1 year)
-    DELETE FROM body_progress_logs
-    WHERE date < CURRENT_DATE - INTERVAL '1 day' * 365;
+    -- NOTE: body_progress_logs are NOT deleted - they are critical athlete data
     
     -- Delete old AI recommendations that have expired
     DELETE FROM ai_recommendations
-    WHERE expires_at IS NOT NULL AND expires_at < NOW();
+    WHERE expiresAt IS NOT NULL AND expiresAt < NOW();
     
     -- Log cleanup
     RAISE NOTICE 'Cleanup completed. Deleted logs older than % days.', p_days_to_keep;
@@ -441,7 +439,7 @@ DECLARE
     v_new_level INTEGER;
     v_current_streak INTEGER;
 BEGIN
-    FOR v_user IN SELECT id FROM users WHERE deleted_at IS NULL LOOP
+    FOR v_user IN SELECT id FROM users WHERE deletedAt IS NULL LOOP
         -- Recalculate total XP
         v_total_xp := calculate_user_total_xp(v_user.id);
         
@@ -454,12 +452,12 @@ BEGIN
         -- Update gamification profile
         UPDATE gamification_profiles
         SET 
-            total_xp = v_total_xp,
+            totalXp = v_total_xp,
             level = v_new_level,
-            current_streak = v_current_streak,
-            longest_streak = GREATEST(longest_streak, v_current_streak),
-            updated_at = NOW()
-        WHERE user_id = v_user.id;
+            currentStreak = v_current_streak,
+            longestStreak = GREATEST(longestStreak, v_current_streak),
+            updatedAt = NOW()
+        WHERE userId = v_user.id;
     END LOOP;
     
     RAISE NOTICE 'User stats recalculation completed.';
@@ -474,14 +472,14 @@ BEGIN
     -- Check if missions already exist for this date
     IF EXISTS(
         SELECT 1 FROM daily_missions 
-        WHERE user_id = p_user_id AND date = p_date
+        WHERE userId = p_user_id AND date = p_date
     ) THEN
         RAISE NOTICE 'Missions already exist for user % on date %', p_user_id, p_date;
         RETURN;
     END IF;
     
-    -- Water mission
-    INSERT INTO daily_missions (user_id, date, title, description, category, xp_reward, status)
+    -- Water mission (ID will be generated by DEFAULT cuid())
+    INSERT INTO daily_missions (userId, date, title, description, category, xpReward, status)
     VALUES (
         p_user_id, 
         p_date, 
@@ -493,7 +491,7 @@ BEGIN
     );
     
     -- Food mission
-    INSERT INTO daily_missions (user_id, date, title, description, category, xp_reward, status)
+    INSERT INTO daily_missions (userId, date, title, description, category, xpReward, status)
     VALUES (
         p_user_id, 
         p_date, 
@@ -505,7 +503,7 @@ BEGIN
     );
     
     -- Exercise mission
-    INSERT INTO daily_missions (user_id, date, title, description, category, xp_reward, status)
+    INSERT INTO daily_missions (userId, date, title, description, category, xpReward, status)
     VALUES (
         p_user_id, 
         p_date, 
@@ -517,7 +515,7 @@ BEGIN
     );
     
     -- Recovery mission
-    INSERT INTO daily_missions (user_id, date, title, description, category, xp_reward, status)
+    INSERT INTO daily_missions (userId, date, title, description, category, xpReward, status)
     VALUES (
         p_user_id, 
         p_date, 

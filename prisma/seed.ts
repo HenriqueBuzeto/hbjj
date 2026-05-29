@@ -4,6 +4,12 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
+  // Prevent running seed in production
+  if (process.env.NODE_ENV === 'production') {
+    console.log('⚠️  Seed skipped: Cannot run in production environment')
+    return
+  }
+
   console.log('🌱 Starting seed...')
 
   // ============================================
