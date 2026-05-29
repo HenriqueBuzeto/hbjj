@@ -209,7 +209,7 @@ const DashboardPage = () => {
           <div className="flex gap-1.5">
             <Link href="/gamificacao">
               <div className="bg-zinc-950 border border-zinc-850 hover:border-purple-500/20 text-purple-400 px-3 py-1.5 rounded-xl text-[10px] font-black flex items-center shadow-md cursor-pointer uppercase tracking-wider">
-                <Flame size={12} className="mr-1 fill-purple-400 text-purple-400 animate-pulse" /> 
+                <img src="/logo.png" alt="HBJJ Logo" className="w-3 h-3 mr-1 object-contain animate-pulse" /> 
                 Streak: {gamification?.currentStreak || user?.streak || 0}
               </div>
             </Link>

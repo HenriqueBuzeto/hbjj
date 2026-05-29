@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Clock, Flame, TrendingUp } from 'lucide-react';
+import { Play, Clock, TrendingUp } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
@@ -78,7 +78,7 @@ const TrainPage = () => {
                 </p>
                 <h2 className="text-2xl font-bold">{activeSession.title}</h2>
               </div>
-              <Flame size={32} className="text-yellow-300 animate-pulse" aria-hidden="true" />
+              <img src="/logo.png" alt="HBJJ Logo" className="w-8 h-8 object-contain animate-pulse" />
             </div>
             <div className="flex gap-4 mb-4">
               <div className="flex items-center gap-2">
@@ -86,7 +86,7 @@ const TrainPage = () => {
                 <span className="text-sm">{activeSession.duration}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Flame size={16} aria-hidden="true" />
+                <img src="/logo.png" alt="HBJJ Logo" className="w-4 h-4 object-contain" />
                 <span className="text-sm">{activeSession.kcal} kcal</span>
               </div>
             </div>
@@ -163,7 +163,7 @@ const TrainPage = () => {
                         {workout.duration}
                       </span>
                       <span className="flex items-center gap-1">
-                        <Flame size={14} aria-hidden="true" />
+                        <img src="/logo.png" alt="HBJJ Logo" className="w-3.5 h-3.5 object-contain" />
                         {workout.kcal} kcal
                       </span>
                     </div>
@@ -221,7 +221,7 @@ const TrainPage = () => {
                   <p className="text-xs text-gray-500">Duração</p>
                 </div>
                 <div className="text-center">
-                  <Flame size={24} className="mx-auto mb-2 text-orange-400" aria-hidden="true" />
+                  <img src="/logo.png" alt="HBJJ Logo" className="w-6 h-6 mx-auto mb-2 object-contain" />
                   <p className="text-sm font-semibold text-gray-800 dark:text-white">
                     {selectedWorkout.kcal}
                   </p>

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { ArrowLeft, Flame } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 
@@ -98,8 +98,8 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
 
           {/* Central App Logo */}
           <div className="relative z-10 flex justify-center mb-1">
-            <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20 transform rotate-3 hover:rotate-0 transition-transform duration-300">
-              <Flame className="w-8 h-8 text-white animate-pulse" />
+            <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20 transform rotate-3 hover:rotate-0 transition-transform duration-300 overflow-hidden">
+              <img src="/logo.png" alt="HBJJ Logo" className="w-10 h-10 object-contain" />
             </div>
           </div>
 
