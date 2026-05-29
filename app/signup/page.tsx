@@ -106,8 +106,11 @@ const SignupPage = () => {
     setLoading(true)
     setError('')
 
+    console.log('[Signup] Starting registration process')
+
     try {
       // Step 1: Register user
+      console.log('[Signup] Step 1: Registering user')
       const registerResponse = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -118,28 +121,40 @@ const SignupPage = () => {
         }),
       })
 
+      console.log('[Signup] Register response status:', registerResponse.status)
+
       if (!registerResponse.ok) {
         const data = await registerResponse.json()
+        console.error('[Signup] Register error:', data)
         setError(data.error || 'Erro ao registrar')
         setLoading(false)
         return
       }
 
+      console.log('[Signup] User registered successfully')
+
       // Step 2: Login automatically
+      console.log('[Signup] Step 2: Logging in automatically')
       const loginResult = await signIn('credentials', {
         email: authData.email,
         password: authData.password,
         redirect: false,
       })
 
+      console.log('[Signup] Login result:', loginResult)
+
       if (loginResult?.error) {
+        console.error('[Signup] Login error:', loginResult.error)
         setError('Erro ao fazer login automático')
         setLoading(false)
         return
       }
 
+      console.log('[Signup] Login successful')
+
       // Step 3: Complete onboarding
-      await fetch('/api/onboarding/complete', {
+      console.log('[Signup] Step 3: Completing onboarding')
+      const onboardingResponse = await fetch('/api/onboarding/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -167,9 +182,22 @@ const SignupPage = () => {
         }),
       })
 
+      console.log('[Signup] Onboarding response status:', onboardingResponse.status)
+
+      if (!onboardingResponse.ok) {
+        const data = await onboardingResponse.json()
+        console.error('[Signup] Onboarding error:', data)
+        setError(data.error || 'Erro ao completar onboarding')
+        setLoading(false)
+        return
+      }
+
+      console.log('[Signup] Onboarding completed successfully')
+
       // Step 4: Create competition if target is set
       if (formData.competitionName && formData.competitionDate) {
-        await fetch('/api/competitions', {
+        console.log('[Signup] Step 4: Creating competition')
+        const competitionResponse = await fetch('/api/competitions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -183,10 +211,14 @@ const SignupPage = () => {
             priority: formData.competitionPriority,
           }),
         })
+
+        console.log('[Signup] Competition response status:', competitionResponse.status)
       }
 
+      console.log('[Signup] Redirecting to dashboard')
       router.push('/dashboard')
     } catch (err) {
+      console.error('[Signup] Registration error:', err)
       setError('Erro ao completar cadastro')
       setLoading(false)
     }
