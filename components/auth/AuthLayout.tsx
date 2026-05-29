@@ -98,9 +98,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
 
           {/* Central App Logo */}
           <div className="relative z-10 flex justify-center mb-1">
-            <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20 transform rotate-3 hover:rotate-0 transition-transform duration-300 overflow-hidden">
-              <img src="/logo.png" alt="HBJJ Logo" className="w-10 h-10 object-contain" />
-            </div>
+            <img src="/logo.png" alt="HBJJ Logo" className="w-24 h-24 object-contain" />
           </div>
 
           {/* Bottom S-Curve Mask */}
