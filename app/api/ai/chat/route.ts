@@ -4,9 +4,8 @@ import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/auth'
 import { rateLimit, RATE_LIMIT_CONFIGS } from '@/lib/rate-limit'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Force dynamic rendering to avoid build-time execution
+export const dynamic = 'force-dynamic'
 
 // Dangerous keywords to block
 const DANGEROUS_KEYWORDS = [
