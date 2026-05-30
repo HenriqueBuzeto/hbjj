@@ -31,13 +31,25 @@ const AlimentacaoPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Buscar dados de nutrição de hoje
+  const { data: userData } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) throw new Error('Failed to fetch user');
+      return res.json();
+    },
+  });
+
+  const userId = userData?.user?.id;
+
   const { data: nutritionData, isLoading } = useQuery({
-    queryKey: ['nutrition', 'today'],
+    queryKey: ['nutrition', 'today', userId],
     queryFn: async () => {
       const res = await fetch('/api/nutrition/today');
       if (!res.ok) throw new Error('Failed to fetch nutrition');
       return res.json();
     },
+    enabled: !!userId,
   });
 
   // Adicionar refeição

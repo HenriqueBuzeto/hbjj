@@ -29,13 +29,25 @@ const EvolucaoPage = () => {
   const [activePhotoType, setActivePhotoType] = useState<'front' | 'side' | 'back'>('front');
 
   // Buscar dados de progresso
+  const { data: userData } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) throw new Error('Failed to fetch user');
+      return res.json();
+    },
+  });
+
+  const userId = userData?.user?.id;
+
   const { data: progressData, isLoading } = useQuery({
-    queryKey: ['progress'],
+    queryKey: ['progress', userId],
     queryFn: async () => {
       const res = await fetch('/api/progress?days=30');
       if (!res.ok) throw new Error('Failed to fetch progress');
       return res.json();
     },
+    enabled: !!userId,
   });
 
   // Upload de foto

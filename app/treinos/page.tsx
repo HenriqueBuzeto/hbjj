@@ -34,19 +34,32 @@ const TreinosPage = () => {
   const queryClient = useQueryClient();
   const [activeSession, setActiveSession] = useState<string | null>(null);
 
+  // Buscar dados do usuário
+  const { data: userData } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) throw new Error('Failed to fetch user');
+      return res.json();
+    },
+  });
+
+  const userId = userData?.user?.id;
+
   // Buscar camp ativo
   const { data: campData, isLoading: isLoadingCamp } = useQuery({
-    queryKey: ['camp', 'active'],
+    queryKey: ['camp', 'active', userId],
     queryFn: async () => {
       const res = await fetch('/api/camp/active');
       if (!res.ok) throw new Error('Failed to fetch camp');
       return res.json();
     },
+    enabled: !!userId,
   });
 
   // Buscar sessões de treino
   const { data: sessionsData, isLoading: isLoadingSessions } = useQuery({
-    queryKey: ['training-sessions'],
+    queryKey: ['training-sessions', userId],
     queryFn: async () => {
       const campId = campData?.camp?.id;
       const url = campId ? `/api/training-sessions?campId=${campId}` : '/api/training-sessions';
@@ -54,6 +67,7 @@ const TreinosPage = () => {
       if (!res.ok) throw new Error('Failed to fetch sessions');
       return res.json();
     },
+    enabled: !!userId,
   });
 
   // Completar sessão de treino

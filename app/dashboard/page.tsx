@@ -15,7 +15,7 @@ import EmptyState from '@/components/ui/EmptyState';
 
 const DashboardPage = () => {
   const router = useRouter();
-  const { user: mockUser, dailyData } = useAppContext();
+  const { user: contextUser, dailyData } = useAppContext();
 
   // Buscar dados reais das APIs
   const { data: userData, isLoading: isLoadingUser } = useQuery({
@@ -25,47 +25,48 @@ const DashboardPage = () => {
       if (!res.ok) throw new Error('Failed to fetch user');
       return res.json();
     },
-    
   });
 
+  const userId = userData?.user?.id;
+
   const { data: campData } = useQuery({
-    queryKey: ['camp', 'active'],
+    queryKey: ['camp', 'active', userId],
     queryFn: async () => {
       const res = await fetch('/api/camp/active');
       if (!res.ok) throw new Error('Failed to fetch camp');
       return res.json();
     },
-    
+    enabled: !!userId,
   });
 
   const { data: missionsData } = useQuery({
-    queryKey: ['missions', 'today'],
+    queryKey: ['missions', 'today', userId],
     queryFn: async () => {
       const res = await fetch('/api/missions/today');
       if (!res.ok) throw new Error('Failed to fetch missions');
       return res.json();
     },
-    
+    enabled: !!userId,
   });
 
   const { data: gamificationData } = useQuery({
-    queryKey: ['gamification'],
+    queryKey: ['gamification', userId],
     queryFn: async () => {
       const res = await fetch('/api/gamification');
       if (!res.ok) throw new Error('Failed to fetch gamification');
       return res.json();
     },
-    
+    enabled: !!userId,
   });
 
   const { data: readinessData } = useQuery({
-    queryKey: ['readiness', 'today'],
+    queryKey: ['readiness', 'today', userId],
     queryFn: async () => {
       const res = await fetch('/api/readiness/today');
       if (!res.ok) throw new Error('Failed to fetch readiness');
       return res.json();
     },
-    
+    enabled: !!userId,
   });
 
   // Usar dados reais das APIs
