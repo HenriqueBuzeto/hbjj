@@ -52,7 +52,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const authSession = await auth()
+    const authSession = await getSession()
 
     if (!authsession?.id) {
       return NextResponse.json(
