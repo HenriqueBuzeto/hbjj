@@ -88,8 +88,23 @@ const PerfilPage = () => {
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
+    
     // Clear all TanStack Query cache to prevent data mixing between users
     queryClient.clear();
+    
+    // Clear localStorage and sessionStorage for HBJJ keys
+    Object.keys(localStorage).forEach(key => {
+      if (key.toLowerCase().includes('hbjj') || key.toLowerCase().includes('user') || key.toLowerCase().includes('auth')) {
+        localStorage.removeItem(key);
+      }
+    });
+    
+    Object.keys(sessionStorage).forEach(key => {
+      if (key.toLowerCase().includes('hbjj') || key.toLowerCase().includes('user') || key.toLowerCase().includes('auth')) {
+        sessionStorage.removeItem(key);
+      }
+    });
+    
     router.push('/login');
   };
 
@@ -379,6 +394,29 @@ const PerfilPage = () => {
 
         {/* Controls & Options */}
         <div className="space-y-2 pt-4">
+          <Button
+            variant="outline"
+            full
+            onClick={() => {
+              // Emergency clear session and cache
+              Object.keys(localStorage).forEach(key => {
+                if (key.toLowerCase().includes('hbjj') || key.toLowerCase().includes('user') || key.toLowerCase().includes('auth')) {
+                  localStorage.removeItem(key);
+                }
+              });
+              Object.keys(sessionStorage).forEach(key => {
+                if (key.toLowerCase().includes('hbjj') || key.toLowerCase().includes('user') || key.toLowerCase().includes('auth')) {
+                  sessionStorage.removeItem(key);
+                }
+              });
+              queryClient.clear();
+              handleLogout();
+            }}
+            className="border-orange-500/30 text-orange-400 hover:bg-orange-950/20 text-xs font-bold"
+          >
+            <Settings size={14} className="mr-2" />
+            Limpar Sessão e Entrar Novamente
+          </Button>
           <Button
             variant="outline"
             full

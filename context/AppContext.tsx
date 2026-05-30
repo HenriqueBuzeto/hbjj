@@ -45,10 +45,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
           if (data.user) {
             console.log('[AppContext] Loading user data from API:', data.user);
             setUser(data.user);
+          } else {
+            // No user data - clear any stale cache
+            console.log('[AppContext] No user data, clearing stale cache');
+            setUser(null);
+            // Clear localStorage/sessionStorage for stale data
+            Object.keys(localStorage).forEach(key => {
+              if (key.toLowerCase().includes('hbjj') || key.toLowerCase().includes('user') || key.toLowerCase().includes('auth')) {
+                localStorage.removeItem(key);
+              }
+            });
+            Object.keys(sessionStorage).forEach(key => {
+              if (key.toLowerCase().includes('hbjj') || key.toLowerCase().includes('user') || key.toLowerCase().includes('auth')) {
+                sessionStorage.removeItem(key);
+              }
+            });
           }
+        } else {
+          // API error - clear stale data
+          console.log('[AppContext] API error, clearing stale cache');
+          setUser(null);
         }
       } catch (error) {
         console.error('[AppContext] Error loading user data:', error);
+        setUser(null);
       } finally {
         setIsLoading(false);
       }
