@@ -46,6 +46,11 @@ model User {
   aiRecommendations AIRecommendation[]
   videoFavorites UserVideoFavorite[]
   trainingSessions TrainingSession[]
+  athletePlanProfile AthletePlanProfile?
+  athletePlanTargets AthletePlanTarget[]
+  athletePlanRecommendations AthletePlanRecommendation[]
+  athleteWeeklyPlans AthleteWeeklyPlan[]
+  athleteDailyPlanItems AthleteDailyPlanItem[]
 
   @@index([email])
   @@map("users")
@@ -584,4 +589,115 @@ model UserVideoFavorite {
 
   @@unique([userId, youtubeVideoId])
   @@map("user_video_favorites")
+}
+
+// ============================================
+// ATHLETE PLAN ENGINE
+// ============================================
+
+model AthletePlanProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  planType       String   // competitor, hobby, weight_loss, return_to_training, maintenance
+  primaryGoal    String   // competition, weight_loss, improve_gas, gain_strength, mobility, general_health
+  intensityLevel String   // light, moderate, strong, competitor, camp_intensive
+  riskLevel      String   @default("low") // low, moderate, high
+  summary        String   @db.Text
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user           User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targets        AthletePlanTarget[]
+  recommendations AthletePlanRecommendation[]
+  weeklyPlans    AthleteWeeklyPlan[]
+
+  @@index([userId])
+  @@map("athlete_plan_profiles")
+}
+
+model AthletePlanTarget {
+  id            String   @id @default(cuid())
+  userId        String
+  planProfileId String
+  targetType    String   // weight, water, protein, calories, training_hours, sleep_hours, recovery_score
+  currentValue  Float?
+  targetValue   Float
+  weeklyTarget  Float?
+  unit          String   // kg, L, g, kcal, hours, score
+  deadline      DateTime?
+  status        String   @default("pending") // pending, in_progress, completed, failed
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planProfile   AthletePlanProfile @relation(fields: [planProfileId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([planProfileId])
+  @@map("athlete_plan_targets")
+}
+
+model AthletePlanRecommendation {
+  id            String   @id @default(cuid())
+  userId        String
+  planProfileId String
+  category      String   // training, nutrition, recovery, technique, competition
+  title         String
+  content       String   @db.Text
+  priority      String   @default("medium") // low, medium, high
+  source        String   @default("engine") // engine, ai, hybrid
+  createdAt     DateTime @default(now())
+
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planProfile   AthletePlanProfile @relation(fields: [planProfileId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([planProfileId])
+  @@map("athlete_plan_recommendations")
+}
+
+model AthleteWeeklyPlan {
+  id            String   @id @default(cuid())
+  userId        String
+  planProfileId String
+  weekNumber    Int
+  phase         String   // base, build, peak, taper, deload
+  focus         String
+  startDate     DateTime
+  endDate       DateTime
+  notes         String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planProfile   AthletePlanProfile @relation(fields: [planProfileId], references: [id], onDelete: Cascade)
+  dailyItems    AthleteDailyPlanItem[]
+
+  @@index([userId])
+  @@index([planProfileId])
+  @@map("athlete_weekly_plans")
+}
+
+model AthleteDailyPlanItem {
+  id            String   @id @default(cuid())
+  userId        String
+  weeklyPlanId  String
+  date          DateTime
+  type          String   // training, recovery, nutrition, technique, strength, cardio, mobility
+  title         String
+  description   String?  @db.Text
+  durationMinutes Int?
+  intensity     String?  // low, medium, high
+  status        String   @default("pending") // pending, completed, skipped
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weeklyPlan    AthleteWeeklyPlan @relation(fields: [weeklyPlanId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([weeklyPlanId])
+  @@index([date])
+  @@map("athlete_daily_plan_items")
 }
