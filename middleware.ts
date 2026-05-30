@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('user_session')
-  const isLoggedIn = !!token
+  const isLoggedIn = !!token && token.value !== '' && token.value !== 'undefined'
   
   // Páginas públicas que não requerem autenticação
   const isPublicPage = 
@@ -20,10 +20,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Se estiver logado e tentar acessar página de auth, redireciona para home
+  // Se estiver logado e tentar acessar página de auth (exceto /), redireciona para home
   if (isLoggedIn && isPublicPage && request.nextUrl.pathname !== '/') {
     const url = request.nextUrl.clone()
     url.pathname = '/home'
+    return NextResponse.redirect(url)
+  }
+
+  // Se não estiver logado e estiver na página inicial, redireciona para login
+  if (!isLoggedIn && request.nextUrl.pathname === '/') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 }
