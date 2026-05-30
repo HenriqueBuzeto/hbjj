@@ -2,13 +2,13 @@ import { NextResponse } from 'next/server'
 import { competitionSchema } from '@/lib/validations/athlete'
 import { prisma } from '@/lib/prisma'
 import { calculateDaysRemaining, calculateWeightToCut } from '@/lib/camp'
-import { auth } from '@/lib/auth'
+import { getSession } from '@/lib/simple-auth'
 
 export async function GET(request: Request) {
   try {
-    const session = await auth()
+    const session = await getSession()
 
-    if (!session?.user?.id) {
+    if (!session?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }
@@ -48,9 +48,9 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const session = await auth()
+    const session = await getSession()
 
-    if (!session?.user?.id) {
+    if (!session?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }

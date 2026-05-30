@@ -1,22 +1,22 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { auth } from '@/lib/auth'
+import { getSession } from '@/lib/simple-auth'
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await auth()
+    const session = await getSession()
 
-    if (!session?.user?.id) {
+    if (!session?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
 
     const competition = await prisma.competition.findFirst({
       where: {
@@ -50,16 +50,16 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await auth()
+    const session = await getSession()
 
-    if (!session?.user?.id) {
+    if (!session?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
 
     const body = await request.json()
 
@@ -83,16 +83,16 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await auth()
+    const session = await getSession()
 
-    if (!session?.user?.id) {
+    if (!session?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
 
     await prisma.competition.delete({
       where: { id: params.id },

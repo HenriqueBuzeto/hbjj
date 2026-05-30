@@ -1,23 +1,23 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { addXP, updateStreak } from '@/lib/gamification'
-import { auth } from '@/lib/auth'
+import { getSession } from '@/lib/simple-auth'
 
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await auth()
+    const session = await getSession()
 
-    if (!session?.user?.id) {
+    if (!session?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
 
     // Get mission
     const mission = await prisma.dailyMission.findFirst({

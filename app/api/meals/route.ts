@@ -2,13 +2,13 @@ import { NextResponse } from 'next/server'
 import { mealLogSchema } from '@/lib/validations/nutrition'
 import { prisma } from '@/lib/prisma'
 import { addXP, updateStreak } from '@/lib/gamification'
-import { auth } from '@/lib/auth'
+import { getSession } from '@/lib/simple-auth'
 
 export async function POST(request: Request) {
   try {
-    const session = await auth()
+    const session = await getSession()
 
-    if (!session?.user?.id) {
+    if (!session?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }
@@ -82,9 +82,9 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const session = await auth()
+    const session = await getSession()
 
-    if (!session?.user?.id) {
+    if (!session?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }
@@ -123,9 +123,9 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const session = await auth()
+    const session = await getSession()
 
-    if (!session?.user?.id) {
+    if (!session?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }

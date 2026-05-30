@@ -3,7 +3,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { signIn } from '@/lib/auth'
 import AuthLayout from '@/components/auth/AuthLayout'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
@@ -24,17 +23,19 @@ const LoginPage = () => {
     console.log('[Login] Attempting login with email:', email)
 
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       })
 
-      console.log('[Login] Sign in result:', result)
+      console.log('[Login] Login response status:', response.status)
 
-      if (result?.error) {
-        console.error('[Login] Sign in error:', result.error)
-        setError('E-mail ou senha inválidos')
+      const data = await response.json()
+
+      if (!response.ok) {
+        console.error('[Login] Login error:', data.error)
+        setError(data.error || 'E-mail ou senha inválidos')
       } else {
         console.log('[Login] Login successful, redirecting to dashboard')
         router.push('/dashboard')

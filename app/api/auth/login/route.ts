@@ -1,44 +1,32 @@
 import { NextResponse } from 'next/server'
 import { loginSchema } from '@/lib/validations/auth'
-import { getUserByEmail, verifyPassword } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { authenticateUser, createSession } from '@/lib/simple-auth'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
     const validatedData = loginSchema.parse(body)
 
-    // Find user
-    const user = await getUserByEmail(validatedData.email)
+    // Authenticate user
+    const user = await authenticateUser(validatedData.email, validatedData.password)
 
-    if (!user || !user.passwordHash) {
+    if (!user) {
       return NextResponse.json(
         { error: 'Credenciais inválidas' },
         { status: 401 }
       )
     }
 
-    // Verify password
-    const isValid = await verifyPassword(validatedData.password, user.passwordHash)
+    // Create session
+    await createSession(user.id)
 
-    if (!isValid) {
-      return NextResponse.json(
-        { error: 'Credenciais inválidas' },
-        { status: 401 }
-      )
-    }
-
-    // In a real implementation, you would set up a session/JWT here
-    // For now, return user data (will be replaced with proper auth)
     return NextResponse.json({
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
-        plan: user.plan,
-        athleteProfile: user.athleteProfile,
-        jiuJitsuProfile: user.jiuJitsuProfile,
-        gamificationProfile: user.gamificationProfile,
       },
     })
   } catch (error: any) {

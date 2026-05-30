@@ -7,7 +7,6 @@ import AuthLayout from '@/components/auth/AuthLayout'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import { useAppContext } from '@/context/AppContext'
-import { signIn } from '@/lib/auth'
 import { Mail, Lock, User, AlertTriangle, ChevronRight, Activity, Calendar, Trophy, Landmark } from 'lucide-react'
 
 const BJJ_BELTS = [
@@ -135,16 +134,20 @@ const SignupPage = () => {
 
       // Step 2: Login automatically
       console.log('[Signup] Step 2: Logging in automatically')
-      const loginResult = await signIn('credentials', {
-        email: authData.email,
-        password: authData.password,
-        redirect: false,
+      const loginResponse = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: authData.email,
+          password: authData.password,
+        }),
       })
 
-      console.log('[Signup] Login result:', loginResult)
+      console.log('[Signup] Login response status:', loginResponse.status)
 
-      if (loginResult?.error) {
-        console.error('[Signup] Login error:', loginResult.error)
+      if (!loginResponse.ok) {
+        const data = await loginResponse.json()
+        console.error('[Signup] Login error:', data.error)
         setError('Erro ao fazer login automático')
         setLoading(false)
         return

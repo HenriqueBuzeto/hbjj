@@ -1,23 +1,23 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { addXP, updateStreak } from '@/lib/gamification'
-import { auth } from '@/lib/auth'
+import { getSession } from '@/lib/simple-auth'
 
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const authSession = await auth()
+    const authSession = await getSession()
 
-    if (!authSession?.user?.id) {
+    if (!authSession?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }
       )
     }
 
-    const userId = authSession.user.id
+    const userId = authSession.id
 
     const body = await request.json()
     const { caloriesBurned, notes } = body

@@ -2,13 +2,13 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { put } from '@vercel/blob'
 import { addXP } from '@/lib/gamification'
-import { auth } from '@/lib/auth'
+import { getSession } from '@/lib/simple-auth'
 
 export async function POST(request: Request) {
   try {
-    const session = await auth()
+    const session = await getSession()
 
-    if (!session?.user?.id) {
+    if (!session?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }
@@ -60,9 +60,9 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const session = await auth()
+    const session = await getSession()
 
-    if (!session?.user?.id) {
+    if (!session?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }

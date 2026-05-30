@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { prisma } from '@/lib/prisma'
-import { auth } from '@/lib/auth'
+import { getSession } from '@/lib/simple-auth'
 import { rateLimit, RATE_LIMIT_CONFIGS } from '@/lib/rate-limit'
 
 // Force dynamic rendering to avoid build-time execution
@@ -65,9 +65,9 @@ function getFallbackResponse(userMessage: string): string {
 
 export async function POST(request: Request) {
   try {
-    const session = await auth()
+    const session = await getSession()
 
-    if (!session?.user?.id) {
+    if (!session?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }

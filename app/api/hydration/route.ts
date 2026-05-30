@@ -3,13 +3,13 @@ import { hydrationLogSchema } from '@/lib/validations/nutrition'
 import { prisma } from '@/lib/prisma'
 import { addXP, updateStreak } from '@/lib/gamification'
 import { startOfDay } from 'date-fns'
-import { auth } from '@/lib/auth'
+import { getSession } from '@/lib/simple-auth'
 
 export async function POST(request: Request) {
   try {
-    const session = await auth()
+    const session = await getSession()
 
-    if (!session?.user?.id) {
+    if (!session?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }
