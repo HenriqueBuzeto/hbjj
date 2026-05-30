@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/simple-auth'
 import { prisma } from '@/lib/prisma'
-import { AthletePlanEngine, AthletePlanCalculator } from '@/lib/athlete-plan-engine'
+import { AthletePlanEngine, AthletePlanRepository } from '@/lib/athlete-plan-engine'
 import { z } from 'zod'
 
 // Validation schema
@@ -157,8 +157,8 @@ export async function POST(request: Request) {
       readiness,
     })
 
-    // TODO: Save plan to database after Prisma migration is resolved
-    // await AthletePlanRepository.savePlan(userId, plan)
+    // Save plan to database (logs for now until migration is resolved)
+    await AthletePlanRepository.savePlan(userId, plan)
 
     console.log('[AthletePlanEngine] Generated plan for user:', userId, plan.planType, plan.primaryGoal)
 

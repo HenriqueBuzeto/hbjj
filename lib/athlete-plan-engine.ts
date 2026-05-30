@@ -836,120 +836,133 @@ export class AthletePlanEngine {
 // ============================================
 
 // TODO: Enable after Prisma migration is resolved
-// export class AthletePlanRepository {
-//   /**
-//    * Save generated plan to database
-//    */
-//   static async savePlan(userId: string, plan: GeneratedPlan): Promise<void> {
-//     // Create or update plan profile
-//     const planProfile = await prisma.athletePlanProfile.upsert({
-//       where: { userId },
-//       create: {
-//         userId,
-//         planType: plan.planType,
-//         primaryGoal: plan.primaryGoal,
-//         intensityLevel: plan.intensityLevel,
-//         riskLevel: plan.riskLevel,
-//         summary: plan.summary,
-//         isActive: true,
-//       },
-//       update: {
-//         planType: plan.planType,
-//         primaryGoal: plan.primaryGoal,
-//         intensityLevel: plan.intensityLevel,
-//         riskLevel: plan.riskLevel,
-//         summary: plan.summary,
-//         isActive: true,
-//         updatedAt: new Date(),
-//       },
-//     });
+// For now, plan generation works but data is not persisted to database
+export class AthletePlanRepository {
+  /**
+   * Save generated plan to database
+   */
+  static async savePlan(userId: string, plan: GeneratedPlan): Promise<void> {
+    // TODO: Enable after Prisma migration is resolved
+    console.log('[AthletePlanRepository] Plan generation requested for user:', userId)
+    console.log('[AthletePlanRepository] Plan type:', plan.planType)
+    console.log('[AthletePlanRepository] Primary goal:', plan.primaryGoal)
+    console.log('[AthletePlanRepository] Risk level:', plan.riskLevel)
+    console.log('[AthletePlanRepository] Targets:', plan.targets.length)
+    console.log('[AthletePlanRepository] Recommendations:', plan.recommendations.length)
+    console.log('[AthletePlanRepository] Weekly plans:', plan.weeklyPlans.length)
+    
+    // Uncomment after migration is resolved:
+    /*
+    const planProfile = await prisma.athletePlanProfile.upsert({
+      where: { userId },
+      create: {
+        userId,
+        planType: plan.planType,
+        primaryGoal: plan.primaryGoal,
+        intensityLevel: plan.intensityLevel,
+        riskLevel: plan.riskLevel,
+        summary: plan.summary,
+        isActive: true,
+      },
+      update: {
+        planType: plan.planType,
+        primaryGoal: plan.primaryGoal,
+        intensityLevel: plan.intensityLevel,
+        riskLevel: plan.riskLevel,
+        summary: plan.summary,
+        isActive: true,
+        updatedAt: new Date(),
+      },
+    });
 
-//     // Save targets
-//     for (const target of plan.targets) {
-//       await prisma.athletePlanTarget.upsert({
-//         where: {
-//           id: '', // Will create new
-//         },
-//         create: {
-//           userId,
-//           planProfileId: planProfile.id,
-//           targetType: target.targetType,
-//           currentValue: target.currentValue,
-//           targetValue: target.targetValue,
-//           weeklyTarget: target.weeklyTarget,
-//           unit: target.unit,
-//           deadline: target.deadline,
-//         },
-//         update: {},
-//       });
-//     }
+    for (const target of plan.targets) {
+      await prisma.athletePlanTarget.upsert({
+        where: { id: '' },
+        create: {
+          userId,
+          planProfileId: planProfile.id,
+          targetType: target.targetType,
+          currentValue: target.currentValue,
+          targetValue: target.targetValue,
+          weeklyTarget: target.weeklyTarget,
+          unit: target.unit,
+          deadline: target.deadline,
+        },
+        update: {},
+      });
+    }
 
-//     // Save recommendations
-//     for (const recommendation of plan.recommendations) {
-//       await prisma.athletePlanRecommendation.create({
-//         data: {
-//           userId,
-//           planProfileId: planProfile.id,
-//           category: recommendation.category,
-//           title: recommendation.title,
-//           content: recommendation.content,
-//           priority: recommendation.priority,
-//           source: 'engine',
-//         },
-//       });
-//     }
+    for (const recommendation of plan.recommendations) {
+      await prisma.athletePlanRecommendation.create({
+        data: {
+          userId,
+          planProfileId: planProfile.id,
+          category: recommendation.category,
+          title: recommendation.title,
+          content: recommendation.content,
+          priority: recommendation.priority,
+          source: 'engine',
+        },
+      });
+    }
 
-//     // Save weekly plans
-//     for (const weeklyPlan of plan.weeklyPlans) {
-//       const savedWeeklyPlan = await prisma.athleteWeeklyPlan.create({
-//         data: {
-//           userId,
-//           planProfileId: planProfile.id,
-//           weekNumber: weeklyPlan.weekNumber,
-//           phase: weeklyPlan.phase,
-//           focus: weeklyPlan.focus,
-//           startDate: weeklyPlan.startDate,
-//           endDate: weeklyPlan.endDate,
-//           notes: weeklyPlan.notes,
-//         },
-//       });
+    for (const weeklyPlan of plan.weeklyPlans) {
+      const savedWeeklyPlan = await prisma.athleteWeeklyPlan.create({
+        data: {
+          userId,
+          planProfileId: planProfile.id,
+          weekNumber: weeklyPlan.weekNumber,
+          phase: weeklyPlan.phase,
+          focus: weeklyPlan.focus,
+          startDate: weeklyPlan.startDate,
+          endDate: weeklyPlan.endDate,
+          notes: weeklyPlan.notes,
+        },
+      });
 
-//       // Save daily items
-//       for (const dailyItem of weeklyPlan.dailyItems) {
-//         await prisma.athleteDailyPlanItem.create({
-//           data: {
-//             userId,
-//             weeklyPlanId: savedWeeklyPlan.id,
-//             date: dailyItem.date,
-//             type: dailyItem.type,
-//             title: dailyItem.title,
-//             description: dailyItem.description,
-//             durationMinutes: dailyItem.durationMinutes,
-//             intensity: dailyItem.intensity,
-//           },
-//         });
-//       }
-//     }
-//   }
+      for (const dailyItem of weeklyPlan.dailyItems) {
+        await prisma.athleteDailyPlanItem.create({
+          data: {
+            userId,
+            weeklyPlanId: savedWeeklyPlan.id,
+            date: dailyItem.date,
+            type: dailyItem.type,
+            title: dailyItem.title,
+            description: dailyItem.description,
+            durationMinutes: dailyItem.durationMinutes,
+            intensity: dailyItem.intensity,
+          },
+        });
+      }
+    }
+    */
+  }
 
-//   /**
-//    * Get current plan for user
-//    */
-//   static async getCurrentPlan(userId: string) {
-//     return await prisma.athletePlanProfile.findUnique({
-//       where: { userId, isActive: true },
-//       include: {
-//         targets: true,
-//         recommendations: true,
-//         weeklyPlans: {
-//           include: {
-//             dailyItems: true,
-//           },
-//           orderBy: {
-//             weekNumber: 'asc',
-//           },
-//         },
-//       },
-//     });
-//   }
-// }
+  /**
+   * Get current plan for user
+   */
+  static async getCurrentPlan(userId: string) {
+    // TODO: Enable after Prisma migration is resolved
+    console.log('[AthletePlanRepository] Get current plan requested for user:', userId)
+    return null;
+    
+    // Uncomment after migration is resolved:
+    /*
+    return await prisma.athletePlanProfile.findUnique({
+      where: { userId, isActive: true },
+      include: {
+        targets: true,
+        recommendations: true,
+        weeklyPlans: {
+          include: {
+            dailyItems: true,
+          },
+          orderBy: {
+            weekNumber: 'asc',
+          },
+        },
+      },
+    });
+    */
+  }
+}
