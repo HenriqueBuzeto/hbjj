@@ -69,12 +69,23 @@ const DashboardPage = () => {
     enabled: !!userId,
   });
 
+  const { data: planData } = useQuery({
+    queryKey: ['athlete-plan', 'current', userId],
+    queryFn: async () => {
+      const res = await fetch('/api/athlete-plan/current');
+      if (!res.ok) throw new Error('Failed to fetch athlete plan');
+      return res.json();
+    },
+    enabled: !!userId,
+  });
+
   // Usar dados reais das APIs
   const user = userData?.user;
   const camp = campData?.camp;
   const missions = missionsData?.missions || [];
   const gamification = gamificationData?.profile;
   const readiness = readinessData?.readinessLog;
+  const athletePlan = planData?.plan;
 
   // Camp Phase calculations
   const campInfo = useMemo(() => {
@@ -232,6 +243,44 @@ const DashboardPage = () => {
             </Link>
           </div>
         </motion.div>
+
+        {/* Athlete Plan Summary Card */}
+        {athletePlan ? (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+          >
+            <Card className="bg-zinc-950 border border-purple-500/15 p-4 space-y-3">
+              <div className="flex justify-between items-start">
+                <div>
+                  <span className="text-[9px] font-black text-purple-450 uppercase tracking-widest">Seu Plano Personalizado</span>
+                  <h3 className="text-sm font-extrabold text-white mt-0.5">{athletePlan.planType === 'competitor_with_weight_cut' ? 'Competidor com Corte' : athletePlan.planType === 'competitor_no_weight_cut' ? 'Competidor Performance' : athletePlan.planType === 'weight_loss' ? 'Emagrecimento' : athletePlan.planType === 'hobby' ? 'Hobby/Saúde' : 'Manutenção'}</h3>
+                  <p className="text-[10px] text-zinc-400 mt-1">{athletePlan.summary}</p>
+                </div>
+                <div className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase ${
+                  athletePlan.riskLevel === 'high' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                  athletePlan.riskLevel === 'moderate' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                  'bg-green-500/20 text-green-400 border border-green-500/30'
+                }`}>
+                  {athletePlan.riskLevel === 'high' ? 'Alto Risco' : athletePlan.riskLevel === 'moderate' ? 'Risco Moderado' : 'Baixo Risco'}
+                </div>
+              </div>
+
+              {/* Quick targets */}
+              {athletePlan.targets && athletePlan.targets.length > 0 && (
+                <div className="grid grid-cols-3 gap-2 mt-3">
+                  {athletePlan.targets.slice(0, 3).map((target: any, idx: number) => (
+                    <div key={idx} className="bg-zinc-900/50 rounded-lg p-2 text-center">
+                      <span className="text-[8px] font-bold text-zinc-500 block uppercase">{target.targetType}</span>
+                      <span className="text-xs font-black text-white">{target.targetValue}{target.unit}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </motion.div>
+        ) : null}
 
         {/* Camp Inteligente & Phase Visualizer Card */}
         {campInfo ? (
