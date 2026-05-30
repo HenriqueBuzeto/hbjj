@@ -77,7 +77,8 @@ const DashboardPage = () => {
 
   // Camp Phase calculations
   const campInfo = useMemo(() => {
-    if (!camp || !camp.competition) 
+    if (!camp || !camp.competition) return null;
+
     const compDate = new Date(camp.competition.eventDate);
     const today = new Date();
     const diffTime = compDate.getTime() - today.getTime();
@@ -152,12 +153,6 @@ const DashboardPage = () => {
         </div>
       </MainLayout>
     );
-  }
-
-  // Redirect se não autenticado
-  
-    
-    
   }
 
   // If user doesn't have a belt, onboarding is needed

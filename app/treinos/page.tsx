@@ -92,11 +92,6 @@ const TreinosPage = () => {
     },
   });
 
-  
-    
-    
-  }
-
   const camp = campData?.camp;
   const sessions = sessionsData?.sessions || [];
 
