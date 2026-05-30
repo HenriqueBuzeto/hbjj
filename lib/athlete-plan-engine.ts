@@ -200,12 +200,17 @@ export class AthletePlanCalculator {
     goal: 'lose' | 'maintain' | 'gain' = 'maintain',
     intensity: IntensityLevel = IntensityLevel.MODERATE
   ): number {
+    // Garantir valores válidos
+    const validWeight = weight || 70;
+    const validHeight = height || 175;
+    const validAge = age || 30;
+    
     // BMR simplificado (Mifflin-St Jeor)
     let bmr: number;
     if (gender === 'male') {
-      bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+      bmr = 10 * validWeight + 6.25 * validHeight - 5 * validAge + 5;
     } else {
-      bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+      bmr = 10 * validWeight + 6.25 * validHeight - 5 * validAge - 161;
     }
 
     // Fator de atividade baseado na intensidade
@@ -226,7 +231,10 @@ export class AthletePlanCalculator {
       gain: 300,
     };
 
-    return Math.round(tdee + goalAdjustments[goal]);
+    const totalCalories = tdee + goalAdjustments[goal];
+    
+    // Garantir valor mínimo válido
+    return Math.max(1200, Math.round(totalCalories));
   }
 
   /**
