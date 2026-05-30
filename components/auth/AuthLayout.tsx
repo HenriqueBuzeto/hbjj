@@ -4,6 +4,7 @@ import React from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 interface AuthLayoutProps {
   title?: string
@@ -98,7 +99,14 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
 
           {/* Central App Logo */}
           <div className="relative z-10 flex justify-center mb-1">
-            <img src="/logo.png" alt="HBJJ Logo" className="w-32 h-32 object-contain" />
+            <Image 
+              src="/logo.png" 
+              alt="HBJJ Logo" 
+              width={128}
+              height={128}
+              className="w-32 h-32 object-contain"
+              priority
+            />
           </div>
 
           {/* Bottom S-Curve Mask */}
