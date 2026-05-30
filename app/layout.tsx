@@ -14,12 +14,14 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'HBJJ - Saúde & Jiu-Jitsu',
   description: 'Preparação física, nutrição, rotina e treinos para atletas de Jiu-Jitsu.',
+  manifest: '/manifest.json',
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 5,
+  maximumScale: 1,
+  userScalable: false,
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#8B5CF6' },
     { media: '(prefers-color-scheme: dark)', color: '#18181b' },
@@ -33,7 +35,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" className="dark" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      </head>
+      <body className={`${inter.variable} font-sans antialiased overflow-hidden`}>
         <Providers>
           {children}
         </Providers>

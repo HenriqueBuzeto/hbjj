@@ -62,7 +62,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   }, [user?.competitionDate, user?.weight, user?.competitionWeightLimit, user?.competitionName]);
 
   return (
-    <div className="max-w-md mx-auto min-h-screen relative shadow-2xl overflow-hidden font-sans bg-zinc-900 text-zinc-100 transition-colors duration-300">
+    <div className="max-w-md mx-auto h-[100dvh] relative shadow-2xl overflow-hidden font-sans bg-zinc-900 text-zinc-100 transition-colors duration-300 flex flex-col">
       
       {/* MODO CAMP: Unified Top Dashboard Cockpit Banner */}
       {user?.competitionName && compInfo && !hideNav && (
@@ -70,7 +70,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           onClick={() => router.push('/evolucao')}
-          className="bg-gradient-to-r from-purple-950/80 to-zinc-950 border-b border-purple-500/30 p-3 flex flex-col gap-1.5 cursor-pointer hover:bg-zinc-900/60 transition-all z-50 sticky top-0 backdrop-blur-md"
+          className="bg-gradient-to-r from-purple-950/80 to-zinc-950 border-b border-purple-500/30 p-3 flex flex-col gap-1.5 cursor-pointer hover:bg-zinc-900/60 transition-all z-50 backdrop-blur-md flex-shrink-0"
         >
           <div className="flex items-center justify-between">
             <span className="text-[9px] font-black tracking-widest text-purple-400 flex items-center gap-1 uppercase">
@@ -112,7 +112,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       )}
 
       {/* Main Content */}
-      <div className="h-full overflow-y-auto custom-scrollbar scroll-smooth pb-24">
+      <div className="flex-1 overflow-y-auto custom-scrollbar scroll-smooth">
         {children}
       </div>
 
@@ -122,14 +122,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           initial={{ y: 100 }}
           animate={{ y: 0 }}
           className="
-            fixed bottom-0 left-0 right-0 mx-auto
-            w-full max-w-md
+            flex-shrink-0
             bg-zinc-950/95 backdrop-blur-md
             border-t border-purple-500/20
             px-2 py-2 
             flex justify-around items-center 
             z-40 
-            pb-5 
+            pb-[env(safe-area-inset-bottom)]
             shadow-[0_-5px_25px_rgba(0,0,0,0.6)]
           "
         >
