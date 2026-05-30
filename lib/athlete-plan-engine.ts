@@ -835,14 +835,17 @@ export class AthletePlanEngine {
 // DATABASE OPERATIONS
 // ============================================
 
-// TODO: Enable after Prisma migration is resolved
-// For now, plan generation works but data is not persisted to database
+// NOTE: This code is commented out because Prisma client needs to be regenerated
+// after the migration is applied. Follow the instructions in MIGRATION_FIX.md to:
+// 1. Execute the SQL manually in the Neon console
+// 2. Run: npx prisma generate
+// 3. Uncomment this code
+
 export class AthletePlanRepository {
   /**
    * Save generated plan to database
    */
   static async savePlan(userId: string, plan: GeneratedPlan): Promise<void> {
-    // TODO: Enable after Prisma migration is resolved
     console.log('[AthletePlanRepository] Plan generation requested for user:', userId)
     console.log('[AthletePlanRepository] Plan type:', plan.planType)
     console.log('[AthletePlanRepository] Primary goal:', plan.primaryGoal)
@@ -851,8 +854,9 @@ export class AthletePlanRepository {
     console.log('[AthletePlanRepository] Recommendations:', plan.recommendations.length)
     console.log('[AthletePlanRepository] Weekly plans:', plan.weeklyPlans.length)
     
-    // Uncomment after migration is resolved:
+    // TODO: Uncomment after running: npx prisma generate
     /*
+    // Create or update plan profile
     const planProfile = await prisma.athletePlanProfile.upsert({
       where: { userId },
       create: {
@@ -875,6 +879,7 @@ export class AthletePlanRepository {
       },
     });
 
+    // Save targets
     for (const target of plan.targets) {
       await prisma.athletePlanTarget.upsert({
         where: { id: '' },
@@ -892,6 +897,7 @@ export class AthletePlanRepository {
       });
     }
 
+    // Save recommendations
     for (const recommendation of plan.recommendations) {
       await prisma.athletePlanRecommendation.create({
         data: {
@@ -906,6 +912,7 @@ export class AthletePlanRepository {
       });
     }
 
+    // Save weekly plans
     for (const weeklyPlan of plan.weeklyPlans) {
       const savedWeeklyPlan = await prisma.athleteWeeklyPlan.create({
         data: {
@@ -920,6 +927,7 @@ export class AthletePlanRepository {
         },
       });
 
+      // Save daily items
       for (const dailyItem of weeklyPlan.dailyItems) {
         await prisma.athleteDailyPlanItem.create({
           data: {
@@ -942,11 +950,9 @@ export class AthletePlanRepository {
    * Get current plan for user
    */
   static async getCurrentPlan(userId: string) {
-    // TODO: Enable after Prisma migration is resolved
     console.log('[AthletePlanRepository] Get current plan requested for user:', userId)
-    return null;
     
-    // Uncomment after migration is resolved:
+    // TODO: Uncomment after running: npx prisma generate
     /*
     return await prisma.athletePlanProfile.findUnique({
       where: { userId, isActive: true },
@@ -964,5 +970,7 @@ export class AthletePlanRepository {
       },
     });
     */
+    
+    return null;
   }
 }
