@@ -65,7 +65,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     <div className="max-w-md mx-auto min-h-screen relative shadow-2xl overflow-hidden font-sans bg-zinc-900 text-zinc-100 transition-colors duration-300">
       
       {/* MODO CAMP: Unified Top Dashboard Cockpit Banner */}
-      {user.competitionName && compInfo && !hideNav && (
+      {user?.competitionName && compInfo && !hideNav && (
         <motion.div 
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -75,7 +75,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           <div className="flex items-center justify-between">
             <span className="text-[9px] font-black tracking-widest text-purple-400 flex items-center gap-1 uppercase">
               <Trophy size={11} className="text-purple-450 animate-bounce" />
-              Camp Ativo: {user.competitionName}
+              Camp Ativo: {user?.competitionName}
             </span>
             <span className="text-[10px] font-black text-pink-400 bg-pink-950/50 px-2 py-0.5 rounded-full border border-pink-500/20">
               {compInfo.daysRemaining} dias restantes
@@ -85,9 +85,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
               <span className="text-zinc-400 text-[10px] uppercase font-bold">Peso:</span>
-              <span className="font-extrabold text-white">{user.weight} kg</span>
+              <span className="font-extrabold text-white">{user?.weight || 0} kg</span>
               <span className="text-zinc-500">→</span>
-              <span className="text-purple-300 font-extrabold">{user.competitionWeightLimit} kg</span>
+              <span className="text-purple-300 font-extrabold">{user?.competitionWeightLimit || 0} kg</span>
             </div>
             
             <div className="text-[10.5px] font-black">
