@@ -6,22 +6,21 @@ export function middleware(request: NextRequest) {
   const isLoggedIn = !!token && token.value !== '' && token.value !== 'undefined'
   
   // Páginas públicas que não requerem autenticação
-  const isPublicPage = 
+  const isAuthPage = 
     request.nextUrl.pathname.startsWith('/login') || 
     request.nextUrl.pathname.startsWith('/signup') ||
     request.nextUrl.pathname.startsWith('/forgot-password') ||
-    request.nextUrl.pathname.startsWith('/reset-password') ||
-    request.nextUrl.pathname === '/'
+    request.nextUrl.pathname.startsWith('/reset-password')
 
   // Se não estiver logado e tentar acessar página protegida, redireciona para login
-  if (!isLoggedIn && !isPublicPage) {
+  if (!isLoggedIn && !isAuthPage && request.nextUrl.pathname !== '/') {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
-  // Se estiver logado e tentar acessar página de auth (exceto /), redireciona para home
-  if (isLoggedIn && isPublicPage && request.nextUrl.pathname !== '/') {
+  // Se estiver logado e tentar acessar página de auth, redireciona para home
+  if (isLoggedIn && isAuthPage) {
     const url = request.nextUrl.clone()
     url.pathname = '/home'
     return NextResponse.redirect(url)
