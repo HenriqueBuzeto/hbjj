@@ -58,19 +58,37 @@ export async function PUT(request: Request) {
     })
 
     // Atualizar perfil de atleta se fornecido
-    if (athleteProfile && user.athleteProfile) {
-      await prisma.athleteProfile.update({
-        where: { userId: session.id },
-        data: athleteProfile,
-      })
+    if (athleteProfile) {
+      if (user.athleteProfile) {
+        await prisma.athleteProfile.update({
+          where: { userId: session.id },
+          data: athleteProfile,
+        })
+      } else {
+        await prisma.athleteProfile.create({
+          data: {
+            ...athleteProfile,
+            userId: session.id,
+          },
+        })
+      }
     }
 
     // Atualizar perfil de Jiu-Jitsu se fornecido
-    if (jiuJitsuProfile && user.jiuJitsuProfile) {
-      await prisma.jiuJitsuProfile.update({
-        where: { userId: session.id },
-        data: jiuJitsuProfile,
-      })
+    if (jiuJitsuProfile) {
+      if (user.jiuJitsuProfile) {
+        await prisma.jiuJitsuProfile.update({
+          where: { userId: session.id },
+          data: jiuJitsuProfile,
+        })
+      } else {
+        await prisma.jiuJitsuProfile.create({
+          data: {
+            ...jiuJitsuProfile,
+            userId: session.id,
+          },
+        })
+      }
     }
 
     return NextResponse.json({ user })
