@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import NavButton from '@/components/common/NavButton';
 import { motion } from 'framer-motion';
-import { useAppContext } from '@/context/AppContext';
+import { useQuery } from '@tanstack/react-query';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -23,8 +23,19 @@ interface MainLayoutProps {
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useAppContext();
   const hideNav = pathname === '/camera' || pathname === '/pro' || pathname === '/signup' || pathname === '/onboarding';
+
+  // Carregar dados do usuário da API
+  const { data: userData } = useQuery({
+    queryKey: ['auth', 'me'],
+    queryFn: async () => {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) throw new Error('Failed to fetch user');
+      return res.json();
+    },
+  });
+
+  const user = userData?.user;
 
   const navItems = [
     { path: '/home', icon: <HomeIcon size={20} />, label: 'Início', ariaLabel: 'Ir para início' },
@@ -32,11 +43,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     { path: '/coach', icon: <MessageSquare size={20} />, label: 'Coach IA', ariaLabel: 'Falar com Coach IA' },
     { path: '/alimentacao', icon: <BookOpen size={20} />, label: 'Nutrição', ariaLabel: 'Ir para alimentação' },
     { path: '/evolucao', icon: <BarChart2 size={20} />, label: 'Evolução', ariaLabel: 'Ir para evolução' },
+    { path: '/perfil', icon: <UserIcon size={20} />, label: 'Perfil', ariaLabel: 'Ir para perfil' },
   ];
 
   // Calculate remaining weight and days
   const compInfo = useMemo(() => {
-    if (!user.competitionName || !user.competitionDate) return null;
+    if (!user || !user.competitionName || !user.competitionDate) return null;
     const compDate = new Date(user.competitionDate);
     const today = new Date();
     const diffTime = compDate.getTime() - today.getTime();
@@ -47,7 +59,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       daysRemaining: diffDays > 0 ? diffDays : 0,
       weightDiff: Number(weightDiff.toFixed(1))
     };
-  }, [user.competitionDate, user.weight, user.competitionWeightLimit]);
+  }, [user?.competitionDate, user?.weight, user?.competitionWeightLimit, user?.competitionName]);
 
   return (
     <div className="max-w-md mx-auto min-h-screen relative shadow-2xl overflow-hidden font-sans bg-zinc-900 text-zinc-100 transition-colors duration-300">
