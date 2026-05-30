@@ -166,6 +166,7 @@ const SignupPage = () => {
             age: parseFloat(formData.age) || 25,
             weightKg: parseFloat(formData.weight) || 70,
             heightCm: parseFloat(formData.height) || 175,
+            targetWeightKg: parseFloat(formData.desiredWeight) || undefined,
             city: formData.city,
           },
           jiuJitsuProfile: {
