@@ -246,6 +246,19 @@ export async function POST(request: Request) {
       console.error('[Onboarding] Error generating daily tips:', error)
     }
 
+    // Generate personalized athlete plan
+    console.log('[Onboarding] Generating personalized athlete plan')
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/athlete-plan/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      })
+      console.log('[Onboarding] Personalized athlete plan generated')
+    } catch (error) {
+      console.error('[Onboarding] Error generating athlete plan:', error)
+    }
+
     return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error('[Onboarding] Complete onboarding error:', error)
