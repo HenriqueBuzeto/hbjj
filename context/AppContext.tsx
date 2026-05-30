@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { User, DailyData, RecoveryLog, ChatMessage } from '@/types';
 
 interface AppContextType {
@@ -31,6 +31,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [dailyData, setDailyData] = useState<DailyData | null>(null);
   const [darkMode, setDarkMode] = useState(true); // Default dark mode for HBJJ
   const [notification, setNotification] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load user data from API on mount
+  useEffect(() => {
+    async function loadUserData() {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.user) {
+            setUser(data.user);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    loadUserData();
+  }, []);
 
   const showNotification = useCallback((msg: string, type: 'success' | 'error') => {
     setNotification({ msg, type });
