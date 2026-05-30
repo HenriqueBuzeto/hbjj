@@ -24,7 +24,7 @@ const PerfilPage = () => {
       if (!res.ok) throw new Error('Failed to fetch athlete profile');
       return res.json();
     },
-    enabled: !!session,
+    
   });
 
   const { data: jiuJitsuData } = useQuery({
@@ -34,18 +34,18 @@ const PerfilPage = () => {
       if (!res.ok) throw new Error('Failed to fetch jiu-jitsu profile');
       return res.json();
     },
-    enabled: !!session,
+    
   });
 
   // Logout
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/login');
+    
   };
 
-  if (!session) {
-    router.push('/login');
-    return null;
+  
+    
+    
   }
 
   const handleResetProfile = () => {

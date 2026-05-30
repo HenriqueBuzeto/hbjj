@@ -25,7 +25,7 @@ const DashboardPage = () => {
       if (!res.ok) throw new Error('Failed to fetch user');
       return res.json();
     },
-    enabled: !!session,
+    
   });
 
   const { data: campData } = useQuery({
@@ -35,7 +35,7 @@ const DashboardPage = () => {
       if (!res.ok) throw new Error('Failed to fetch camp');
       return res.json();
     },
-    enabled: !!session,
+    
   });
 
   const { data: missionsData } = useQuery({
@@ -45,7 +45,7 @@ const DashboardPage = () => {
       if (!res.ok) throw new Error('Failed to fetch missions');
       return res.json();
     },
-    enabled: !!session,
+    
   });
 
   const { data: gamificationData } = useQuery({
@@ -55,7 +55,7 @@ const DashboardPage = () => {
       if (!res.ok) throw new Error('Failed to fetch gamification');
       return res.json();
     },
-    enabled: !!session,
+    
   });
 
   const { data: readinessData } = useQuery({
@@ -65,7 +65,7 @@ const DashboardPage = () => {
       if (!res.ok) throw new Error('Failed to fetch readiness');
       return res.json();
     },
-    enabled: !!session,
+    
   });
 
   // Usar dados reais se disponíveis, senão usar mock (para transição)
@@ -77,7 +77,7 @@ const DashboardPage = () => {
 
   // Camp Phase calculations
   const campInfo = useMemo(() => {
-    if (!camp || !camp.competition) return null;
+    if (!camp || !camp.competition) 
     const compDate = new Date(camp.competition.eventDate);
     const today = new Date();
     const diffTime = compDate.getTime() - today.getTime();
@@ -155,9 +155,9 @@ const DashboardPage = () => {
   }
 
   // Redirect se não autenticado
-  if (!session) {
-    router.push('/login');
-    return null;
+  
+    
+    
   }
 
   // If user doesn't have a belt, onboarding is needed

@@ -42,7 +42,7 @@ const TreinosPage = () => {
       if (!res.ok) throw new Error('Failed to fetch camp');
       return res.json();
     },
-    enabled: !!session,
+    
   });
 
   // Buscar sessões de treino
@@ -55,7 +55,7 @@ const TreinosPage = () => {
       if (!res.ok) throw new Error('Failed to fetch sessions');
       return res.json();
     },
-    enabled: !!session && !!campData?.camp,
+    
   });
 
   // Completar sessão de treino
@@ -94,9 +94,9 @@ const TreinosPage = () => {
     },
   });
 
-  if (!session) {
-    router.push('/login');
-    return null;
+  
+    
+    
   }
 
   const camp = campData?.camp;

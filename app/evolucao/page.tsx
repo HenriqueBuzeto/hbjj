@@ -36,7 +36,7 @@ const EvolucaoPage = () => {
       if (!res.ok) throw new Error('Failed to fetch progress');
       return res.json();
     },
-    enabled: !!session,
+    
   });
 
   // Upload de foto
@@ -81,9 +81,9 @@ const EvolucaoPage = () => {
     return user.photos?.find(p => p.week === 1) || { week: 1 };
   }, [user.photos]);
 
-  if (!session) {
-    router.push('/login');
-    return null;
+  
+    
+    
   }
 
   const handleSimulatePhotoUpload = (type: 'front' | 'side' | 'back') => {
