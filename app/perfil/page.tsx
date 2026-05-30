@@ -8,14 +8,11 @@ import Button from '@/components/ui/Button';
 import { useAppContext } from '@/context/AppContext';
 import MainLayout from '@/components/layout/MainLayout';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
-import { signOut } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const PerfilPage = () => {
   const router = useRouter();
-  const { data: session } = useSession();
   const { user, setUser } = useAppContext();
   const queryClient = useQueryClient();
 
@@ -42,7 +39,7 @@ const PerfilPage = () => {
 
   // Logout
   const handleLogout = async () => {
-    await signOut({ redirect: false });
+    await fetch('/api/auth/logout', { method: 'POST' });
     router.push('/login');
   };
 

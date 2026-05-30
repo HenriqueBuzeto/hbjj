@@ -9,7 +9,6 @@ import { useAppContext } from '@/context/AppContext';
 import MainLayout from '@/components/layout/MainLayout';
 import Image from 'next/image';
 import Badge from '@/components/ui/Badge';
-import { useSession } from 'next-auth/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
@@ -30,7 +29,7 @@ const VIDEOS_DB: TechnicalVideo[] = [
 
 const TreinosPage = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  
   const { addXP, showNotification } = useAppContext();
   const queryClient = useQueryClient();
   const [activeSession, setActiveSession] = useState<string | null>(null);

@@ -16,14 +16,12 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { useSession } from 'next-auth/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import EmptyState from '@/components/ui/EmptyState';
 
 const EvolucaoPage = () => {
   const router = useRouter();
-  const { data: session } = useSession();
   const { dailyData, user, addEvolutionPhoto, showNotification } = useAppContext();
   const queryClient = useQueryClient();
   

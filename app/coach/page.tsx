@@ -8,7 +8,6 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { useAppContext } from '@/context/AppContext';
 import MainLayout from '@/components/layout/MainLayout';
-import { useSession } from 'next-auth/react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import EmptyState from '@/components/ui/EmptyState';
@@ -22,7 +21,7 @@ const QUICK_PROMPTS = [
 
 const CoachPage = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  
   const { user, addChatMessage } = useAppContext();
   const queryClient = useQueryClient();
   const [inputText, setInputText] = useState('');

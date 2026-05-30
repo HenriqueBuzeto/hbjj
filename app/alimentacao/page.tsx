@@ -11,7 +11,6 @@ import MacroCircle from '@/components/common/MacroCircle';
 import { useAppContext } from '@/context/AppContext';
 import { NUTRITION_DB } from '@/data/mockData';
 import MainLayout from '@/components/layout/MainLayout';
-import { useSession } from 'next-auth/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import EmptyState from '@/components/ui/EmptyState';
@@ -25,7 +24,7 @@ const MEAL_TYPES = [
 
 const AlimentacaoPage = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  
   const { dailyData, updateMeal, updateWater, showNotification } = useAppContext();
   const queryClient = useQueryClient();
   const [selectedMeal, setSelectedMeal] = useState<string | null>(null);

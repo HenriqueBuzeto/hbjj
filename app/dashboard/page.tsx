@@ -10,13 +10,11 @@ import { useAppContext } from '@/context/AppContext';
 import MainLayout from '@/components/layout/MainLayout';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query';
 import EmptyState from '@/components/ui/EmptyState';
 
 const DashboardPage = () => {
   const router = useRouter();
-  const { data: session, status } = useSession();
   const { user: mockUser, dailyData } = useAppContext();
 
   // Buscar dados reais das APIs
