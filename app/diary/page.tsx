@@ -41,14 +41,16 @@ const DiaryPage = () => {
   };
 
   const handleRemoveFood = (mealType: string, index: number) => {
+    if (!dailyData) return;
+    
     const currentMeals = dailyData.meals[mealType as keyof typeof dailyData.meals] || [];
     updateMeal(mealType, currentMeals.filter((_, i) => i !== index));
   };
 
   const totalMacros = {
-    protein: Object.values(dailyData.meals).flat().reduce((sum, item) => sum + (item.p || 0), 0),
-    carbs: Object.values(dailyData.meals).flat().reduce((sum, item) => sum + (item.c || 0), 0),
-    fat: Object.values(dailyData.meals).flat().reduce((sum, item) => sum + (item.f || 0), 0),
+    protein: dailyData ? Object.values(dailyData.meals).flat().reduce((sum, item) => sum + (item.p || 0), 0) : 0,
+    carbs: dailyData ? Object.values(dailyData.meals).flat().reduce((sum, item) => sum + (item.c || 0), 0) : 0,
+    fat: dailyData ? Object.values(dailyData.meals).flat().reduce((sum, item) => sum + (item.f || 0), 0) : 0,
   };
 
   return (
@@ -152,7 +154,7 @@ const DiaryPage = () => {
               <motion.div
                 className="bg-blue-500 h-full rounded-full"
                 initial={{ width: 0 }}
-                animate={{ width: `${Math.min((dailyData.water / 2500) * 100, 100)}%` }}
+                animate={{ width: `${Math.min(((dailyData?.water || 0) / 2500) * 100, 100)}%` }}
                 transition={{ duration: 0.5 }}
               />
             </div>
@@ -161,8 +163,8 @@ const DiaryPage = () => {
 
         {/* Meals */}
         <div className="space-y-4">
-          {MEAL_TYPES.map((meal, index) => {
-            const mealItems = dailyData.meals[meal.key as keyof typeof dailyData.meals] || [];
+          {dailyData && MEAL_TYPES.map((meal, index) => {
+            const mealItems = dailyData?.meals[meal.key as keyof typeof dailyData.meals] || [];
             const mealCalories = mealItems.reduce((sum, item) => sum + (item.cal || 0), 0);
 
             return (
