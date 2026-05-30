@@ -6,7 +6,6 @@ import { Play, Clock, TrendingUp } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
-import { WORKOUTS_DB } from '@/data/mockData';
 import { useAppContext } from '@/context/AppContext';
 import MainLayout from '@/components/layout/MainLayout';
 import Image from 'next/image';
@@ -16,13 +15,14 @@ const TrainPage = () => {
   const { addXP, showNotification } = useAppContext();
   const [selectedWorkout, setSelectedWorkout] = useState<any>(null);
   const [activeSession, setActiveSession] = useState<any>(null);
+  const [workouts, setWorkouts] = useState<any[]>([]);
 
-  const categories = ['Todos', ...Array.from(new Set(WORKOUTS_DB.map(w => w.category)))];
+  const categories = ['Todos', ...Array.from(new Set(workouts.map(w => w.category)))];
   const [selectedCategory, setSelectedCategory] = useState('Todos');
 
   const filteredWorkouts = selectedCategory === 'Todos'
-    ? WORKOUTS_DB
-    : WORKOUTS_DB.filter(w => w.category === selectedCategory);
+    ? workouts
+    : workouts.filter(w => w.category === selectedCategory);
 
   const handleStartWorkout = (workout: any) => {
     setActiveSession(workout);

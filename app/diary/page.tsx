@@ -9,7 +9,6 @@ import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 import MacroCircle from '@/components/common/MacroCircle';
 import { useAppContext } from '@/context/AppContext';
-import { NUTRITION_DB } from '@/data/mockData';
 import MainLayout from '@/components/layout/MainLayout';
 import Image from 'next/image';
 
@@ -25,13 +24,14 @@ const DiaryPage = () => {
   const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
   const [isFoodModalOpen, setIsFoodModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [foods, setFoods] = useState<any[]>([]);
 
-  const filteredFoods = NUTRITION_DB.filter(food =>
+  const filteredFoods = foods.filter(food =>
     food.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleAddFood = (food: any) => {
-    if (selectedMeal) {
+    if (selectedMeal && dailyData) {
       const currentMeals = dailyData.meals[selectedMeal as keyof typeof dailyData.meals] || [];
       updateMeal(selectedMeal, [...currentMeals, food]);
       setIsFoodModalOpen(false);

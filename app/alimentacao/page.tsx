@@ -9,7 +9,6 @@ import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 import MacroCircle from '@/components/common/MacroCircle';
 import { useAppContext } from '@/context/AppContext';
-import { NUTRITION_DB } from '@/data/mockData';
 import MainLayout from '@/components/layout/MainLayout';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
@@ -74,12 +73,14 @@ const AlimentacaoPage = () => {
     },
   });
 
-  const filteredFoods = NUTRITION_DB.filter(food =>
+  const [foods, setFoods] = useState<any[]>([]);
+
+  const filteredFoods = foods.filter(food =>
     food.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleAddFood = (food: any) => {
-    if (selectedMeal) {
+    if (selectedMeal && dailyData) {
       const currentMeals = dailyData.meals[selectedMeal as keyof typeof dailyData.meals] || [];
       updateMeal(selectedMeal, [...currentMeals, food]);
       setIsFoodModalOpen(false);

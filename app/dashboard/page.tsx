@@ -68,8 +68,8 @@ const DashboardPage = () => {
     
   });
 
-  // Usar dados reais se disponíveis, senão usar mock (para transição)
-  const user = userData?.user || mockUser;
+  // Usar dados reais das APIs
+  const user = userData?.user;
   const camp = campData?.camp;
   const missions = missionsData?.missions || [];
   const gamification = gamificationData?.profile;
@@ -157,6 +157,29 @@ const DashboardPage = () => {
 
   // If user doesn't have a belt, onboarding is needed
   const needsOnboarding = !user?.jiuJitsuProfile?.belt;
+
+  if (!user) {
+    return (
+      <MainLayout>
+        <div className="p-5 flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (needsOnboarding) {
+    return (
+      <MainLayout>
+        <div className="p-5 flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-white mb-4">Complete seu onboarding</h1>
+            <p className="text-zinc-400">Por favor, complete seu perfil para acessar o dashboard.</p>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -344,7 +367,7 @@ const DashboardPage = () => {
             Missões Diárias
           </h3>
           <div className="space-y-3">
-            {dailyData.quests.map((q, index) => (
+            {dailyData?.quests?.map((q, index) => (
               <motion.div
                 key={q.id}
                 initial={{ opacity: 0, x: -10 }}
