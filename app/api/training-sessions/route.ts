@@ -54,14 +54,14 @@ export async function POST(request: Request) {
   try {
     const authSession = await getSession()
 
-    if (!authsession?.id) {
+    if (!authSession?.id) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }
       )
     }
 
-    const userId = authsession.id
+    const userId = authSession.id
 
     const body = await request.json()
     const validatedData = trainingSessionSchema.parse(body)
