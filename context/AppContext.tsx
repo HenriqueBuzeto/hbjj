@@ -16,6 +16,7 @@ interface AppContextType {
   updateMeal: (mealType: string, items: any[]) => void;
   updateWater: (amount: number) => void;
   updateCalories: (amount: number) => void;
+  logout: () => void;
   
   // Premium Features
   updateRecoveryLog: (log: RecoveryLog) => void;
@@ -253,6 +254,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     addXP(100);
   }, [addXP, showNotification]);
 
+  const logout = useCallback(() => {
+    setUser(null);
+    setDailyData(null);
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
@@ -268,6 +274,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         updateMeal,
         updateWater,
         updateCalories,
+        logout,
         
         // Premium additions
         updateRecoveryLog,

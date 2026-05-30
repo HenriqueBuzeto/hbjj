@@ -88,6 +88,8 @@ const PerfilPage = () => {
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
+    // Clear all TanStack Query cache to prevent data mixing between users
+    queryClient.clear();
     router.push('/login');
   };
 
