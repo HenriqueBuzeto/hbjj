@@ -5,31 +5,32 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('user_session')
   const isLoggedIn = !!token && token.value !== '' && token.value !== 'undefined'
   
-  // Páginas públicas que não requerem autenticação
-  const isAuthPage = 
-    request.nextUrl.pathname.startsWith('/login') || 
-    request.nextUrl.pathname.startsWith('/signup') ||
-    request.nextUrl.pathname.startsWith('/forgot-password') ||
-    request.nextUrl.pathname.startsWith('/reset-password')
+  // Rotas públicas que não requerem autenticação
+  const publicRoutes = ['/login', '/signup', '/register', '/forgot-password', '/reset-password']
+  const isPublicRoute = publicRoutes.some(route => request.nextUrl.pathname.startsWith(route))
 
-  // Se não estiver logado e tentar acessar página protegida, redireciona para login
-  if (!isLoggedIn && !isAuthPage && request.nextUrl.pathname !== '/') {
+  // Se estiver logado e tentar acessar rota pública (exceto /), redireciona para /dashboard
+  if (isLoggedIn && isPublicRoute && request.nextUrl.pathname !== '/') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return NextResponse.redirect(url)
+  }
+
+  // Se não estiver logado e tentar acessar rota privada, redireciona para /login
+  if (!isLoggedIn && !isPublicRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
-  // Se estiver logado e tentar acessar página de auth, redireciona para home
-  if (isLoggedIn && isAuthPage) {
+  // Página raiz: redireciona baseado em auth
+  if (request.nextUrl.pathname === '/') {
     const url = request.nextUrl.clone()
-    url.pathname = '/home'
-    return NextResponse.redirect(url)
-  }
-
-  // Se não estiver logado e estiver na página inicial, redireciona para login
-  if (!isLoggedIn && request.nextUrl.pathname === '/') {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
+    if (isLoggedIn) {
+      url.pathname = '/dashboard'
+    } else {
+      url.pathname = '/login'
+    }
     return NextResponse.redirect(url)
   }
 }
