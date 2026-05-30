@@ -873,9 +873,8 @@ export class AthletePlanRepository {
 
     // Save targets
     for (const target of plan.targets) {
-      await prisma.athletePlanTarget.upsert({
-        where: { id: '' },
-        create: {
+      await prisma.athletePlanTarget.create({
+        data: {
           userId,
           planProfileId: planProfile.id,
           targetType: target.targetType,
@@ -885,7 +884,6 @@ export class AthletePlanRepository {
           unit: target.unit,
           deadline: target.deadline,
         },
-        update: {},
       });
     }
 
