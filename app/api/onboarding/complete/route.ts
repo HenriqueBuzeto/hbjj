@@ -207,6 +207,45 @@ export async function POST(request: Request) {
     })
     console.log('[Onboarding] Initial daily missions created')
 
+    // Generate workouts
+    console.log('[Onboarding] Generating workouts')
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/workouts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      })
+      console.log('[Onboarding] Workouts generated')
+    } catch (error) {
+      console.error('[Onboarding] Error generating workouts:', error)
+    }
+
+    // Generate meal plan
+    console.log('[Onboarding] Generating meal plan')
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/nutrition/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      })
+      console.log('[Onboarding] Meal plan generated')
+    } catch (error) {
+      console.error('[Onboarding] Error generating meal plan:', error)
+    }
+
+    // Generate daily tips
+    console.log('[Onboarding] Generating daily tips')
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/tips/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      })
+      console.log('[Onboarding] Daily tips generated')
+    } catch (error) {
+      console.error('[Onboarding] Error generating daily tips:', error)
+    }
+
     return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error('[Onboarding] Complete onboarding error:', error)
