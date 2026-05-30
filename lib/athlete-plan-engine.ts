@@ -835,12 +835,6 @@ export class AthletePlanEngine {
 // DATABASE OPERATIONS
 // ============================================
 
-// NOTE: This code is commented out because Prisma client needs to be regenerated
-// after the migration is applied. Follow the instructions in MIGRATION_FIX.md to:
-// 1. Execute the SQL manually in the Neon console
-// 2. Run: npx prisma generate
-// 3. Uncomment this code
-
 export class AthletePlanRepository {
   /**
    * Save generated plan to database
@@ -854,8 +848,6 @@ export class AthletePlanRepository {
     console.log('[AthletePlanRepository] Recommendations:', plan.recommendations.length)
     console.log('[AthletePlanRepository] Weekly plans:', plan.weeklyPlans.length)
     
-    // TODO: Uncomment after running: npx prisma generate
-    /*
     // Create or update plan profile
     const planProfile = await prisma.athletePlanProfile.upsert({
       where: { userId },
@@ -943,7 +935,6 @@ export class AthletePlanRepository {
         });
       }
     }
-    */
   }
 
   /**
@@ -951,9 +942,6 @@ export class AthletePlanRepository {
    */
   static async getCurrentPlan(userId: string) {
     console.log('[AthletePlanRepository] Get current plan requested for user:', userId)
-    
-    // TODO: Uncomment after running: npx prisma generate
-    /*
     return await prisma.athletePlanProfile.findUnique({
       where: { userId, isActive: true },
       include: {
@@ -969,8 +957,5 @@ export class AthletePlanRepository {
         },
       },
     });
-    */
-    
-    return null;
   }
 }
