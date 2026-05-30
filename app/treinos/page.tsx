@@ -70,6 +70,17 @@ const TreinosPage = () => {
     enabled: !!userId,
   });
 
+  // Buscar plano do atleta
+  const { data: planData } = useQuery({
+    queryKey: ['athlete-plan', 'current', userId],
+    queryFn: async () => {
+      const res = await fetch('/api/athlete-plan/current');
+      if (!res.ok) throw new Error('Failed to fetch athlete plan');
+      return res.json();
+    },
+    enabled: !!userId,
+  });
+
   // Completar sessão de treino
   const completeSession = useMutation({
     mutationFn: async (sessionId: string) => {
@@ -108,6 +119,7 @@ const TreinosPage = () => {
 
   const camp = campData?.camp;
   const sessions = sessionsData?.sessions || [];
+  const athletePlan = planData?.plan;
 
   const handleStartWorkout = (title: string) => {
     setActiveSession(title);
@@ -168,6 +180,71 @@ const TreinosPage = () => {
             >
               Registrar Conclusão (Oss!)
             </Button>
+          </motion.div>
+        )}
+
+        {/* Athlete Plan Weekly Plans */}
+        {athletePlan && athletePlan.weeklyPlans && athletePlan.weeklyPlans.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="space-y-3"
+          >
+            <h3 className="text-xs font-extrabold text-zinc-300 uppercase tracking-widest flex items-center gap-2">
+              <Sparkles size={15} className="text-purple-500" />
+              Plano Semanal Personalizado
+            </h3>
+            
+            <div className="space-y-2">
+              {athletePlan.weeklyPlans.slice(0, 2).map((weeklyPlan: any) => (
+                <Card key={weeklyPlan.weekNumber} className="bg-zinc-950 border border-purple-500/15 p-4 space-y-2">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <span className="text-[9px] font-black text-purple-450 uppercase tracking-widest">Semana {weeklyPlan.weekNumber}</span>
+                      <h4 className="text-sm font-extrabold text-white mt-0.5">{weeklyPlan.phase}</h4>
+                      <p className="text-[10px] text-zinc-400 mt-1">{weeklyPlan.focus}</p>
+                    </div>
+                    <div className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase ${
+                      weeklyPlan.phase === 'base' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                      weeklyPlan.phase === 'build' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
+                      weeklyPlan.phase === 'peak' ? 'bg-pink-500/20 text-pink-400 border border-pink-500/30' :
+                      weeklyPlan.phase === 'taper' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                      'bg-zinc-500/20 text-zinc-400 border border-zinc-500/30'
+                    }`}>
+                      {weeklyPlan.phase}
+                    </div>
+                  </div>
+                  
+                  {/* Daily items preview */}
+                  {weeklyPlan.dailyItems && weeklyPlan.dailyItems.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-zinc-850">
+                      <p className="text-[8px] font-bold text-zinc-500 uppercase mb-2">Treinos da semana</p>
+                      <div className="grid grid-cols-7 gap-1">
+                        {weeklyPlan.dailyItems.slice(0, 7).map((item: any, idx: number) => (
+                          <div key={idx} className="text-center">
+                            <div className={`w-6 h-6 rounded-full mx-auto flex items-center justify-center text-[8px] font-black ${
+                              item.type === 'training' ? 'bg-purple-500/30 text-purple-400' :
+                              item.type === 'strength' ? 'bg-pink-500/30 text-pink-400' :
+                              item.type === 'cardio' ? 'bg-blue-500/30 text-blue-400' :
+                              item.type === 'mobility' ? 'bg-green-500/30 text-green-400' :
+                              item.type === 'recovery' ? 'bg-zinc-500/30 text-zinc-400' :
+                              'bg-zinc-500/30 text-zinc-400'
+                            }`}>
+                              {item.type === 'training' ? 'T' :
+                               item.type === 'strength' ? 'F' :
+                               item.type === 'cardio' ? 'C' :
+                               item.type === 'mobility' ? 'M' :
+                               item.type === 'recovery' ? 'R' : '?'}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              ))}
+            </div>
           </motion.div>
         )}
 
