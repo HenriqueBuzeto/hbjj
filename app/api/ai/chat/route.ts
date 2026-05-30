@@ -171,6 +171,11 @@ export async function POST(request: Request) {
       )
     }
 
+    // Get athlete plan
+    const planResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/athlete-plan/current`)
+    const planData = await planResponse.json()
+    const athletePlan = planData?.plan
+
     // Get or create conversation
     let conversation
     if (conversationId) {
@@ -210,9 +215,26 @@ ${user.competitions && user.competitions.length > 0 ? `Competição ativa:
 - Modalidade: ${user.competitions[0].modality.join(', ')}
 - Limite de peso: ${user.competitions[0].weightLimitKg || 'N/A'} kg` : ''}
 
+${athletePlan ? `Plano Personalizado do Atleta:
+- Tipo de plano: ${athletePlan.planType}
+- Objetivo principal: ${athletePlan.primaryGoal}
+- Nível de risco: ${athletePlan.riskLevel}
+- Resumo: ${athletePlan.summary}
+${athletePlan.targets && athletePlan.targets.length > 0 ? `
+Metas do plano:
+${athletePlan.targets.map((t: any) => `- ${t.targetType}: ${t.currentValue} → ${t.targetValue} ${t.unit} (meta semanal: ${t.weeklyTarget})`).join('\n')}` : ''}
+${athletePlan.recommendations && athletePlan.recommendations.length > 0 ? `
+Recomendações do engine:
+${athletePlan.recommendations.slice(0, 3).map((r: any) => `- [${r.category}] ${r.title}: ${r.content}`).join('\n')}` : ''}
+${athletePlan.weeklyPlans && athletePlan.weeklyPlans.length > 0 ? `
+Plano semanal atual:
+- Semana atual: ${athletePlan.weeklyPlans[0].weekNumber}
+- Fase: ${athletePlan.weeklyPlans[0].phase}
+- Foco: ${athletePlan.weeklyPlans[0].focus}` : ''}` : ''}
+
 IMPORTANTE: As recomendações são auxiliares e não substituem treinador, médico, nutricionista ou fisioterapeuta. Sempre consulte profissionais de saúde para orientação personalizada.
 
-Responda de forma motivadora, técnica e prática. Use terminologia de Jiu-Jitsu quando apropriado.`
+Responda de forma motivadora, técnica e prática. Use terminologia de Jiu-Jitsu quando apropriado. Quando houver um plano personalizado, baseie suas respostas nas metas e recomendações do plano.`
 
     // Get conversation history
     const messages = conversation.messages.map((msg: any) => ({
