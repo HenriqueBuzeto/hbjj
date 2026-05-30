@@ -27,33 +27,61 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    // Load user from localStorage on initial mount
+    if (typeof window !== 'undefined') {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        try {
+          return JSON.parse(savedUser);
+        } catch (error) {
+          console.error('[AppContext] Error parsing saved user:', error);
+          return null;
+        }
+      }
+    }
+    return null;
+  });
   const [dailyData, setDailyData] = useState<DailyData | null>(null);
   const [darkMode, setDarkMode] = useState(true); // Default dark mode for HBJJ
   const [notification, setNotification] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Load user data from API on mount
+  // Persist user to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined' && user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+  }, [user]);
+
+  // Load user data from API on mount only if user is null
   useEffect(() => {
     async function loadUserData() {
+      // Only load if user is not already set
+      if (user) {
+        console.log('[AppContext] User already set, skipping API load');
+        return;
+      }
+      
       try {
         setIsLoading(true);
         const response = await fetch('/api/auth/me');
         if (response.ok) {
           const data = await response.json();
           if (data.user) {
+            console.log('[AppContext] Loading user data from API:', data.user);
             setUser(data.user);
           }
         }
       } catch (error) {
-        console.error('Error loading user data:', error);
+        console.error('[AppContext] Error loading user data:', error);
       } finally {
         setIsLoading(false);
       }
     }
     
     loadUserData();
-  }, []);
+  }, []); // Empty dependency array - only run on mount
 
   const showNotification = useCallback((msg: string, type: 'success' | 'error') => {
     setNotification({ msg, type });
