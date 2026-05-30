@@ -74,11 +74,6 @@ const AlimentacaoPage = () => {
     },
   });
 
-  if (!session) {
-    router.push('/login');
-    return null;
-  }
-
   const filteredFoods = NUTRITION_DB.filter(food =>
     food.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
