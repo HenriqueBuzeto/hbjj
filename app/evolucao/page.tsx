@@ -69,16 +69,16 @@ const EvolucaoPage = () => {
     { day: 'Qui', weight: 80.5 },
     { day: 'Sex', weight: 80.2 },
     { day: 'Sáb', weight: 80.1 },
-    { day: 'Dom', weight: user.weight },
+    { day: 'Dom', weight: user?.weight || 0 },
   ];
 
   const currentPhotos = useMemo(() => {
-    return user.photos?.find(p => p.week === selectedPhotoWeek) || { week: selectedPhotoWeek };
-  }, [user.photos, selectedPhotoWeek]);
+    return user?.photos?.find(p => p.week === selectedPhotoWeek) || { week: selectedPhotoWeek };
+  }, [user?.photos, selectedPhotoWeek]);
 
   const basePhotos = useMemo(() => {
-    return user.photos?.find(p => p.week === 1) || { week: 1 };
-  }, [user.photos]);
+    return user?.photos?.find(p => p.week === 1) || { week: 1 };
+  }, [user?.photos]);
 
   const handleSimulatePhotoUpload = (type: 'front' | 'side' | 'back') => {
     // Simulate real local upload of photos
@@ -112,19 +112,19 @@ const EvolucaoPage = () => {
           <Card className="bg-zinc-950 border border-zinc-800 p-4">
             <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Peso Atual</p>
             <p className="text-2xl font-black text-white mt-1">
-              {user.weight} <span className="text-xs font-semibold text-zinc-500">kg</span>
+              {user?.weight || 0} <span className="text-xs font-semibold text-zinc-500">kg</span>
             </p>
             <p className="text-[10px] text-purple-400 font-bold mt-1 uppercase tracking-wider">
-              Categoria: {user.competitionWeightLimit} kg
+              Categoria: {user?.competitionWeightLimit || 0} kg
             </p>
           </Card>
           
           <Card className="bg-zinc-950 border border-zinc-800 p-4">
             <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Falta Cortar</p>
             <p className="text-2xl font-black text-amber-400 mt-1">
-              {Number((user.weight - (user.competitionWeightLimit || 0)).toFixed(1))} <span className="text-xs font-semibold text-zinc-500">kg</span>
+              {Number(((user?.weight || 0) - (user?.competitionWeightLimit || 0)).toFixed(1))} <span className="text-xs font-semibold text-zinc-500">kg</span>
             </p>
-            <p className="text-[10px] text-zinc-500 font-bold mt-1 uppercase">Meta: {user.desiredWeight} kg</p>
+            <p className="text-[10px] text-zinc-500 font-bold mt-1 uppercase">Meta: {user?.desiredWeight || 0} kg</p>
           </Card>
         </div>
 

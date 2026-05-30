@@ -82,7 +82,7 @@ const DiaryPage = () => {
                   Calorias Hoje
                 </p>
                 <h2 className="text-3xl font-bold">
-                  {dailyData.calories}
+                  {dailyData?.calories || 0}
                   <span className="text-lg opacity-80"> kcal</span>
                 </h2>
               </div>
@@ -127,7 +127,7 @@ const DiaryPage = () => {
                     Água
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {dailyData.water}ml / 2500ml
+                    {dailyData?.water || 0}ml / 2500ml
                   </p>
                 </div>
               </div>

@@ -16,11 +16,11 @@ const HomePage = () => {
   const { user, dailyData } = useAppContext();
 
   // If user doesn't have a belt, onboarding is needed
-  const needsOnboarding = !user.belt;
+  const needsOnboarding = !user?.belt;
 
   // Camp Phase calculations
   const campInfo = useMemo(() => {
-    if (!user.competitionDate) return null;
+    if (!user?.competitionDate) return null;
     const compDate = new Date(user.competitionDate);
     const today = new Date();
     const diffTime = compDate.getTime() - today.getTime();
@@ -52,17 +52,17 @@ const HomePage = () => {
       weeksRemaining: weeks > 0 ? weeks : 0,
       daysRemaining: diffDays > 0 ? diffDays : 0
     };
-  }, [user.competitionDate]);
+  }, [user?.competitionDate]);
 
   // Combat Readiness Calculations
   const combatReadiness = useMemo(() => {
-    const recovery = user.recoveryScore || 82;
+    const recovery = user?.recoveryScore || 82;
     const gas = 82; // baseline
     const force = 76; // baseline
     const mobility = 90; // baseline
     
     // Weight readiness: if current weight <= limit weight, 100%. Otherwise, penalty for weight diff.
-    const weightDiff = (user.weight || 88) - (user.competitionWeightLimit || 82);
+    const weightDiff = ((user?.weight || 88) - (user?.competitionWeightLimit || 82));
     const weightReadiness = Math.max(50, Math.min(100, Math.round(100 - (weightDiff > 0 ? weightDiff * 6 : 0))));
 
     const overall = Math.round((recovery + gas + force + mobility + weightReadiness) / 5);
@@ -75,7 +75,7 @@ const HomePage = () => {
       weightReadiness,
       overall
     };
-  }, [user.recoveryScore, user.weight, user.competitionWeightLimit]);
+  }, [user?.recoveryScore, user?.weight, user?.competitionWeightLimit]);
 
   return (
     <MainLayout>
@@ -90,31 +90,31 @@ const HomePage = () => {
             <div className="relative">
               <div className="w-11 h-11 rounded-full bg-zinc-800 border border-purple-500 overflow-hidden shadow-md">
                 <img 
-                  src={`https://api.dicebear.com/7.x/bottts/svg?seed=${user.name || 'hbjj'}&backgroundColor=09090b`} 
+                  src={`https://api.dicebear.com/7.x/bottts/svg?seed=${user?.name || 'hbjj'}&backgroundColor=09090b`} 
                   alt={`Avatar`}
                   className="w-full h-full"
                 />
               </div>
               <div className="absolute -bottom-1 -right-1 bg-purple-600 text-[9px] font-black px-1.5 py-0.5 rounded text-white border border-black shadow">
-                Lvl {user.level}
+                Lvl {user?.level || 1}
               </div>
             </div>
             <div>
               <h2 className="font-extrabold text-white text-sm leading-none mb-1 flex items-center gap-1.5">
-                Olá, {user.name} 
-                {user.belt && (
+                Olá, {user?.name || 'Atleta'} 
+                {user?.belt && (
                   <span className={`text-[9px] px-1.5 py-0.5 rounded font-black border uppercase ${
-                    user.belt === 'white' ? 'bg-white text-black border-zinc-300' :
-                    user.belt === 'blue' ? 'bg-blue-600 text-white border-blue-400' :
-                    user.belt === 'purple' ? 'bg-purple-600 text-white border-purple-400' :
-                    user.belt === 'brown' ? 'bg-amber-800 text-white border-amber-600' :
+                    user?.belt === 'white' ? 'bg-white text-black border-zinc-300' :
+                    user?.belt === 'blue' ? 'bg-blue-600 text-white border-blue-400' :
+                    user?.belt === 'purple' ? 'bg-purple-600 text-white border-purple-400' :
+                    user?.belt === 'brown' ? 'bg-amber-800 text-white border-amber-600' :
                     'bg-red-600 text-white border-red-500'
                   }`}>
-                    Faixa {user.belt === 'white' ? 'Branca' : user.belt === 'blue' ? 'Azul' : user.belt === 'purple' ? 'Roxa' : user.belt === 'brown' ? 'Marrom' : 'Preta'}
+                    Faixa {user?.belt === 'white' ? 'Branca' : user?.belt === 'blue' ? 'Azul' : user?.belt === 'purple' ? 'Roxa' : user?.belt === 'brown' ? 'Marrom' : 'Preta'}
                   </span>
                 )}
               </h2>
-              <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">{user.team || 'Academia'}</p>
+              <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">{user?.team || 'Academia'}</p>
             </div>
           </div>
           
@@ -122,7 +122,7 @@ const HomePage = () => {
             <Link href="/gamificacao">
               <div className="bg-zinc-950 border border-zinc-850 hover:border-purple-500/20 text-purple-400 px-3 py-1.5 rounded-xl text-[10px] font-black flex items-center shadow-md cursor-pointer uppercase tracking-wider">
                 <img src="/logo.png" alt="HBJJ Logo" className="w-3 h-3 mr-1 object-contain animate-pulse" /> 
-                Streak: {user.streak}
+                Streak: {user?.streak || 0}
               </div>
             </Link>
           </div>
@@ -257,7 +257,7 @@ const HomePage = () => {
             Missões Diárias
           </h3>
           <div className="space-y-3">
-            {dailyData.quests.map((q, index) => (
+            {dailyData?.quests?.map((q, index) => (
               <motion.div
                 key={q.id}
                 initial={{ opacity: 0, x: -10 }}

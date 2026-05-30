@@ -32,20 +32,20 @@ const ReportsPage = () => {
     { day: 'Qui', calories: 2200, water: 2400 },
     { day: 'Sex', calories: 1900, water: 2000 },
     { day: 'Sáb', calories: 2300, water: 2500 },
-    { day: 'Dom', calories: dailyData.calories, water: dailyData.water },
+    { day: 'Dom', calories: dailyData?.calories || 0, water: dailyData?.water || 0 },
   ];
 
   const macroData = [
-    { name: 'Proteína', value: dailyData.protein, color: '#4FC3F7' },
-    { name: 'Carboidratos', value: dailyData.carbs, color: '#FFB84D' },
-    { name: 'Gorduras', value: dailyData.fat, color: '#FF6B6B' },
+    { name: 'Proteína', value: dailyData?.protein || 0, color: '#4FC3F7' },
+    { name: 'Carboidratos', value: dailyData?.carbs || 0, color: '#FFB84D' },
+    { name: 'Gorduras', value: dailyData?.fat || 0, color: '#FF6B6B' },
   ];
 
-  const totalMacros = dailyData.protein + dailyData.carbs + dailyData.fat;
+  const totalMacros = (dailyData?.protein || 0) + (dailyData?.carbs || 0) + (dailyData?.fat || 0);
   const macroPercentages = {
-    protein: (dailyData.protein / totalMacros) * 100,
-    carbs: (dailyData.carbs / totalMacros) * 100,
-    fat: (dailyData.fat / totalMacros) * 100,
+    protein: totalMacros > 0 ? ((dailyData?.protein || 0) / totalMacros) * 100 : 0,
+    carbs: totalMacros > 0 ? ((dailyData?.carbs || 0) / totalMacros) * 100 : 0,
+    fat: totalMacros > 0 ? ((dailyData?.fat || 0) / totalMacros) * 100 : 0,
   };
 
   const avgCalories = useMemo(() => {
@@ -56,8 +56,8 @@ const ReportsPage = () => {
     return Math.round(weeklyData.reduce((sum, d) => sum + d.water, 0) / weeklyData.length);
   }, []);
 
-  const calTrend = dailyData.calories > avgCalories ? 'up' : dailyData.calories < avgCalories ? 'down' : 'neutral';
-  const waterTrend = dailyData.water > avgWater ? 'up' : dailyData.water < avgWater ? 'down' : 'neutral';
+  const calTrend = (dailyData?.calories || 0) > avgCalories ? 'up' : (dailyData?.calories || 0) < avgCalories ? 'down' : 'neutral';
+  const waterTrend = (dailyData?.water || 0) > avgWater ? 'up' : (dailyData?.water || 0) < avgWater ? 'down' : 'neutral';
 
   return (
     <MainLayout>
@@ -92,7 +92,7 @@ const ReportsPage = () => {
                 {calTrend === 'neutral' && <Minus size={16} className="text-gray-400" aria-hidden="true" />}
               </div>
               <p className="text-2xl font-bold text-gray-800 dark:text-white">
-                {dailyData.calories}
+                {dailyData?.calories || 0}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Média: {avgCalories} kcal
@@ -115,7 +115,7 @@ const ReportsPage = () => {
                 {waterTrend === 'neutral' && <Minus size={16} className="text-gray-400" aria-hidden="true" />}
               </div>
               <p className="text-2xl font-bold text-gray-800 dark:text-white">
-                {dailyData.water}ml
+                {dailyData?.water || 0}ml
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Média: {avgWater}ml
@@ -271,7 +271,7 @@ const ReportsPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-3xl font-bold text-gray-800 dark:text-white">
-                  {dailyData.sleep}h
+                  {dailyData?.sleep || 0}h
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Meta: 8h por noite
@@ -296,14 +296,14 @@ const ReportsPage = () => {
                     strokeWidth="8"
                     fill="none"
                     strokeDasharray={251.2}
-                    strokeDashoffset={251.2 - (dailyData.sleep / 8) * 251.2}
+                    strokeDashoffset={251.2 - ((dailyData?.sleep || 0) / 8) * 251.2}
                     strokeLinecap="round"
                     className="transition-all duration-500"
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-lg font-bold text-gray-800 dark:text-white">
-                    {Math.round((dailyData.sleep / 8) * 100)}%
+                    {Math.round(((dailyData?.sleep || 0) / 8) * 100)}%
                   </span>
                 </div>
               </div>

@@ -35,8 +35,8 @@ const LEVEL_NAMES = [
 const GamificacaoPage = () => {
   const { user } = useAppContext();
 
-  const currentLevelName = LEVEL_NAMES.find(l => l.lvl === user.level)?.name || 'Competidor';
-  const progressPercent = (user.xp / user.nextLevelXp) * 100;
+  const currentLevelName = LEVEL_NAMES.find(l => l.lvl === user?.level)?.name || 'Competidor';
+  const progressPercent = user?.nextLevelXp ? ((user?.xp || 0) / user.nextLevelXp) * 100 : 0;
 
   return (
     <MainLayout>
@@ -66,17 +66,17 @@ const GamificacaoPage = () => {
               <div>
                 <p className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">Seu Rank Atual</p>
                 <h2 className="text-xl font-black text-white mt-1">{currentLevelName}</h2>
-                <p className="text-zinc-400 text-[10px] mt-0.5">Nível {user.level} Ativo</p>
+                <p className="text-zinc-400 text-[10px] mt-0.5">Nível {user?.level || 1} Ativo</p>
               </div>
               <div className="w-12 h-12 bg-purple-900/60 border border-purple-500/30 text-purple-400 rounded-2xl flex items-center justify-center font-black text-lg">
-                L{user.level}
+                L{user?.level || 1}
               </div>
             </div>
 
             <div className="space-y-1.5">
               <div className="flex justify-between text-[10px] text-zinc-550 font-bold uppercase">
                 <span>Progresso XP</span>
-                <span>{user.xp} / {user.nextLevelXp} XP</span>
+                <span>{user?.xp || 0} / {user?.nextLevelXp || 100} XP</span>
               </div>
               <div className="w-full bg-zinc-900 h-2 rounded-full overflow-hidden">
                 <motion.div
@@ -97,7 +97,7 @@ const GamificacaoPage = () => {
 
           <div className="grid grid-cols-1 gap-3">
             {BADGES_LIST.map((b, index) => {
-              const isUnlocked = user.badges?.includes(b.id);
+              const isUnlocked = user?.badges?.includes(b.id);
 
               return (
                 <motion.div

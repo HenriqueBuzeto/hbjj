@@ -22,13 +22,13 @@ const RecoveryPage = () => {
   const { user, updateRecoveryLog } = useAppContext();
   
   const [log, setLog] = useState({
-    sleepScore: user.recoveryLog?.sleepScore || 8,
-    muscleSoreness: user.recoveryLog?.muscleSoreness || 3,
-    fatigueLevel: user.recoveryLog?.fatigueLevel || 4,
-    stressLevel: user.recoveryLog?.stressLevel || 2,
-    energyLevel: user.recoveryLog?.energyLevel || 8,
-    injuryLevel: user.recoveryLog?.injuryLevel || 1,
-    moodScore: user.recoveryLog?.moodScore || 9,
+    sleepScore: user?.recoveryLog?.sleepScore || 8,
+    muscleSoreness: user?.recoveryLog?.muscleSoreness || 3,
+    fatigueLevel: user?.recoveryLog?.fatigueLevel || 4,
+    stressLevel: user?.recoveryLog?.stressLevel || 2,
+    energyLevel: user?.recoveryLog?.energyLevel || 8,
+    injuryLevel: user?.recoveryLog?.injuryLevel || 1,
+    moodScore: user?.recoveryLog?.moodScore || 9,
   });
 
   const handleSliderChange = (key: string, val: number) => {
@@ -65,9 +65,9 @@ const RecoveryPage = () => {
           <Card className="bg-gradient-to-br from-indigo-950 to-zinc-950 border border-purple-500/20 p-5 flex items-center justify-between">
             <div className="space-y-1.5">
               <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest block">Prontidão de Luta</span>
-              <h2 className="text-3xl font-black text-white">{user.recoveryScore || 82}%</h2>
+              <h2 className="text-3xl font-black text-white">{user?.recoveryScore || 82}%</h2>
               <p className="text-zinc-400 text-xs leading-relaxed max-w-[200px]">
-                {user.recoveryScore && user.recoveryScore >= 80 
+                {user?.recoveryScore && user.recoveryScore >= 80 
                   ? "Seu corpo está pronto para o combate. Sparring e volume alto permitidos." 
                   : "Fadiga moderada detectada. Monitore a intensidade do rola."}
               </p>
@@ -80,7 +80,7 @@ const RecoveryPage = () => {
                   cx="48" cy="48" r="40" 
                   stroke="#8b5cf6" strokeWidth="6" fill="none"
                   strokeDasharray={251.2}
-                  strokeDashoffset={251.2 - ((user.recoveryScore || 82) / 100) * 251.2}
+                  strokeDashoffset={251.2 - ((user?.recoveryScore || 82) / 100) * 251.2}
                   strokeLinecap="round"
                   className="transition-all duration-500 shadow-[0_0_10px_#8b5cf6]"
                 />

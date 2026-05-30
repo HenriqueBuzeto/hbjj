@@ -52,7 +52,7 @@ const CoachPage = () => {
   // Auto scroll to bottom
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [user.chatHistory]);
+  }, [user?.chatHistory]);
 
   const handleSend = (textToSend: string) => {
     if (!textToSend.trim()) return;
@@ -82,11 +82,11 @@ const CoachPage = () => {
 
         {/* Chat Messages Log */}
         <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-1 bg-zinc-950/40 border border-zinc-800 p-3.5 rounded-2xl">
-          {user.chatHistory?.length === 0 ? (
+          {user?.chatHistory?.length === 0 ? (
             <EmptyState type="chat" />
           ) : (
             <>
-              {user.chatHistory?.map((msg) => (
+              {user?.chatHistory?.map((msg) => (
                 <motion.div
                   key={msg.id}
                   initial={{ opacity: 0, y: 10 }}
