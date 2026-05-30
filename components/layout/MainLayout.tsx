@@ -125,7 +125,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             flex-shrink-0
             bg-zinc-950/95 backdrop-blur-md
             border-t border-purple-500/20
-            px-2 py-2 
+            px-3 py-3 
             flex justify-around items-center 
             z-40 
             pb-[env(safe-area-inset-bottom)]
