@@ -57,7 +57,15 @@ export async function getSession(): Promise<SessionUser | null> {
       },
     })
     
-    return user
+    if (!user || !user.name) {
+      return null
+    }
+    
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    }
   } catch (error) {
     console.error('Error parsing session:', error)
     return null
@@ -80,7 +88,7 @@ export async function authenticateUser(email: string, password: string): Promise
     },
   })
   
-  if (!user || !user.passwordHash) {
+  if (!user || !user.passwordHash || !user.name) {
     return null
   }
   
