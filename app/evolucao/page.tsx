@@ -36,7 +36,6 @@ const EvolucaoPage = () => {
       if (!res.ok) throw new Error('Failed to fetch progress');
       return res.json();
     },
-    
   });
 
   // Upload de foto
@@ -80,11 +79,6 @@ const EvolucaoPage = () => {
   const basePhotos = useMemo(() => {
     return user.photos?.find(p => p.week === 1) || { week: 1 };
   }, [user.photos]);
-
-  
-    
-    
-  }
 
   const handleSimulatePhotoUpload = (type: 'front' | 'side' | 'back') => {
     // Simulate real local upload of photos
