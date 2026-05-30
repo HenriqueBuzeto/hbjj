@@ -90,14 +90,16 @@ const AlimentacaoPage = () => {
   };
 
   const handleRemoveFood = (mealType: string, index: number) => {
+    if (!dailyData) return;
+    
     const currentMeals = dailyData.meals[mealType as keyof typeof dailyData.meals] || [];
     updateMeal(mealType, currentMeals.filter((_, i) => i !== index));
   };
 
   const totalMacros = {
-    protein: Object.values(dailyData.meals).flat().reduce((sum, item) => sum + (item.p || 0), 0),
-    carbs: Object.values(dailyData.meals).flat().reduce((sum, item) => sum + (item.c || 0), 0),
-    fat: Object.values(dailyData.meals).flat().reduce((sum, item) => sum + (item.f || 0), 0),
+    protein: dailyData ? Object.values(dailyData.meals).flat().reduce((sum, item) => sum + (item.p || 0), 0) : 0,
+    carbs: dailyData ? Object.values(dailyData.meals).flat().reduce((sum, item) => sum + (item.c || 0), 0) : 0,
+    fat: dailyData ? Object.values(dailyData.meals).flat().reduce((sum, item) => sum + (item.f || 0), 0) : 0,
   };
 
   return (
@@ -130,7 +132,7 @@ const AlimentacaoPage = () => {
                   CALORIAS HOJE
                 </p>
                 <h2 className="text-3xl font-black text-white">
-                  {dailyData.calories}
+                  {dailyData?.calories || 0}
                   <span className="text-sm font-bold text-purple-400"> / 2200 kcal</span>
                 </h2>
               </div>
@@ -175,7 +177,7 @@ const AlimentacaoPage = () => {
                     Controle de Hidratação
                   </p>
                   <p className="text-sm font-black text-purple-300 mt-0.5">
-                    {dailyData.water}ml <span className="text-xs font-medium text-zinc-500">/ 3000ml</span>
+                    {dailyData?.water || 0}ml <span className="text-xs font-medium text-zinc-500">/ 3000ml</span>
                   </p>
                 </div>
               </div>
@@ -198,7 +200,7 @@ const AlimentacaoPage = () => {
               <motion.div
                 className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full"
                 initial={{ width: 0 }}
-                animate={{ width: `${Math.min((dailyData.water / 3000) * 100, 100)}%` }}
+                animate={{ width: `${Math.min(((dailyData?.water || 0) / 3000) * 100, 100)}%` }}
                 transition={{ duration: 0.5 }}
               />
             </div>
@@ -206,7 +208,7 @@ const AlimentacaoPage = () => {
         </motion.div>
 
         {/* Meals List */}
-        {Object.values(dailyData.meals).every(meals => meals.length === 0) ? (
+        {dailyData && Object.values(dailyData.meals).every(meals => meals.length === 0) ? (
           <EmptyState
             type="nutrition"
             action={() => {
@@ -217,8 +219,8 @@ const AlimentacaoPage = () => {
           />
         ) : (
           <div className="space-y-4">
-            {MEAL_TYPES.map((meal, index) => {
-            const mealItems = dailyData.meals[meal.key as keyof typeof dailyData.meals] || [];
+            {dailyData && MEAL_TYPES.map((meal, index) => {
+            const mealItems = dailyData?.meals[meal.key as keyof typeof dailyData.meals] || [];
             const mealCalories = mealItems.reduce((sum, item) => sum + (item.cal || 0), 0);
 
             return (
