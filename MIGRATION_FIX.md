@@ -108,15 +108,15 @@ CREATE INDEX IF NOT EXISTS "athlete_daily_plan_items_weeklyPlanId_idx" ON "athle
 CREATE INDEX IF NOT EXISTS "athlete_daily_plan_items_date_idx" ON "athlete_daily_plan_items"("date");
 
 -- Foreign Keys
-ALTER TABLE "athlete_plan_profiles" ADD CONSTRAINT IF NOT EXISTS "athlete_plan_profiles_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "athlete_plan_targets" ADD CONSTRAINT IF NOT EXISTS "athlete_plan_targets_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "athlete_plan_targets" ADD CONSTRAINT IF NOT EXISTS "athlete_plan_targets_planProfileId_fkey" FOREIGN KEY ("planProfileId") REFERENCES "athlete_plan_profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "athlete_plan_recommendations" ADD CONSTRAINT IF NOT EXISTS "athlete_plan_recommendations_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "athlete_plan_recommendations" ADD CONSTRAINT IF NOT EXISTS "athlete_plan_recommendations_planProfileId_fkey" FOREIGN KEY ("planProfileId") REFERENCES "athlete_plan_profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "athlete_weekly_plans" ADD CONSTRAINT IF NOT EXISTS "athlete_weekly_plans_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "athlete_weekly_plans" ADD CONSTRAINT IF NOT EXISTS "athlete_weekly_plans_planProfileId_fkey" FOREIGN KEY ("planProfileId") REFERENCES "athlete_plan_profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "athlete_daily_plan_items" ADD CONSTRAINT IF NOT EXISTS "athlete_daily_plan_items_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "athlete_daily_plan_items" ADD CONSTRAINT IF NOT EXISTS "athlete_daily_plan_items_weeklyPlanId_fkey" FOREIGN KEY ("weeklyPlanId") REFERENCES "athlete_weekly_plans"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "athlete_plan_profiles" ADD CONSTRAINT "athlete_plan_profiles_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "athlete_plan_targets" ADD CONSTRAINT "athlete_plan_targets_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "athlete_plan_targets" ADD CONSTRAINT "athlete_plan_targets_planProfileId_fkey" FOREIGN KEY ("planProfileId") REFERENCES "athlete_plan_profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "athlete_plan_recommendations" ADD CONSTRAINT "athlete_plan_recommendations_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "athlete_plan_recommendations" ADD CONSTRAINT "athlete_plan_recommendations_planProfileId_fkey" FOREIGN KEY ("planProfileId") REFERENCES "athlete_plan_profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "athlete_weekly_plans" ADD CONSTRAINT "athlete_weekly_plans_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "athlete_weekly_plans" ADD CONSTRAINT "athlete_weekly_plans_planProfileId_fkey" FOREIGN KEY ("planProfileId") REFERENCES "athlete_plan_profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "athlete_daily_plan_items" ADD CONSTRAINT "athlete_daily_plan_items_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "athlete_daily_plan_items" ADD CONSTRAINT "athlete_daily_plan_items_weeklyPlanId_fkey" FOREIGN KEY ("weeklyPlanId") REFERENCES "athlete_weekly_plans"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ```
 
 ### Opção 2: Usar psql direto
