@@ -872,55 +872,66 @@ export class AthletePlanRepository {
     });
 
     // Save targets
-    for (const target of plan.targets) {
-      await prisma.athletePlanTarget.create({
-        data: {
-          userId,
-          planProfileId: planProfile.id,
-          targetType: target.targetType,
-          currentValue: target.currentValue,
-          targetValue: target.targetValue,
-          weeklyTarget: target.weeklyTarget,
-          unit: target.unit,
-          deadline: target.deadline,
-        },
-      });
-    }
+    await prisma.athletePlanTarget.createMany({
+      data: plan.targets.map(target => ({
+        userId,
+        planProfileId: planProfile.id,
+        targetType: target.targetType,
+        currentValue: target.currentValue,
+        targetValue: target.targetValue,
+        weeklyTarget: target.weeklyTarget,
+        unit: target.unit,
+        deadline: target.deadline,
+      })),
+      skipDuplicates: true,
+    });
 
     // Save recommendations
-    for (const recommendation of plan.recommendations) {
-      await prisma.athletePlanRecommendation.create({
-        data: {
-          userId,
-          planProfileId: planProfile.id,
-          category: recommendation.category,
-          title: recommendation.title,
-          content: recommendation.content,
-          priority: recommendation.priority,
-          source: 'engine',
-        },
-      });
-    }
+    await prisma.athletePlanRecommendation.createMany({
+      data: plan.recommendations.map(recommendation => ({
+        userId,
+        planProfileId: planProfile.id,
+        category: recommendation.category,
+        title: recommendation.title,
+        content: recommendation.content,
+        priority: recommendation.priority,
+        source: 'engine',
+      })),
+      skipDuplicates: true,
+    });
 
     // Save weekly plans
-    for (const weeklyPlan of plan.weeklyPlans) {
-      const savedWeeklyPlan = await prisma.athleteWeeklyPlan.create({
-        data: {
-          userId,
-          planProfileId: planProfile.id,
-          weekNumber: weeklyPlan.weekNumber,
-          phase: weeklyPlan.phase,
-          focus: weeklyPlan.focus,
-          startDate: weeklyPlan.startDate,
-          endDate: weeklyPlan.endDate,
-          notes: weeklyPlan.notes,
-        },
-      });
+    const weeklyPlansData = await prisma.athleteWeeklyPlan.createMany({
+      data: plan.weeklyPlans.map(weeklyPlan => ({
+        userId,
+        planProfileId: planProfile.id,
+        weekNumber: weeklyPlan.weekNumber,
+        phase: weeklyPlan.phase,
+        focus: weeklyPlan.focus,
+        startDate: weeklyPlan.startDate,
+        endDate: weeklyPlan.endDate,
+        notes: weeklyPlan.notes,
+      })),
+      skipDuplicates: true,
+    });
 
-      // Save daily items
-      for (const dailyItem of weeklyPlan.dailyItems) {
-        await prisma.athleteDailyPlanItem.create({
-          data: {
+    // Get the created weekly plans to get their IDs
+    const savedWeeklyPlans = await prisma.athleteWeeklyPlan.findMany({
+      where: {
+        userId,
+        planProfileId: planProfile.id,
+      },
+    });
+
+    // Save daily items
+    const dailyItemsData: any[] = [];
+    for (const weeklyPlan of plan.weeklyPlans) {
+      const savedWeeklyPlan = savedWeeklyPlans.find(
+        (wp: any) => wp.weekNumber === weeklyPlan.weekNumber
+      );
+      if (savedWeeklyPlan) {
+        for (const dailyItem of weeklyPlan.dailyItems) {
+          dailyItemsData.push({
             userId,
             weeklyPlanId: savedWeeklyPlan.id,
             date: dailyItem.date,
@@ -929,9 +940,16 @@ export class AthletePlanRepository {
             description: dailyItem.description,
             durationMinutes: dailyItem.durationMinutes,
             intensity: dailyItem.intensity,
-          },
-        });
+          });
+        }
       }
+    }
+
+    if (dailyItemsData.length > 0) {
+      await prisma.athleteDailyPlanItem.createMany({
+        data: dailyItemsData,
+        skipDuplicates: true,
+      });
     }
   }
 
