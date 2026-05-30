@@ -292,13 +292,29 @@ const DashboardPage = () => {
             <Card className="bg-zinc-950 border border-purple-500/15 p-4 space-y-3">
               <div className="flex justify-between items-start">
                 <div>
-                  <span className="text-[9px] font-black text-purple-450 uppercase tracking-widest">Fase Atual do Camp</span>
-                  <h3 className="text-sm font-extrabold text-white mt-0.5">{campInfo.phase}</h3>
-                  <p className="text-[10px] text-zinc-400 mt-1">{campInfo.phaseDesc}</p>
+                  <span className="text-[9px] font-black text-purple-450 uppercase tracking-widest">Camp Ativo</span>
+                  <h3 className="text-sm font-extrabold text-white mt-0.5">{camp?.competition?.name || 'Competição'}</h3>
+                  <p className="text-[10px] text-zinc-400 mt-1">{campInfo.phase}</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-lg font-black text-white">{campInfo.weeksRemaining}</span>
-                  <span className="text-[9px] text-zinc-550 block font-bold uppercase leading-none">Semana(s)</span>
+                  <span className="text-lg font-black text-white">{campInfo.daysRemaining}</span>
+                  <span className="text-[9px] text-zinc-550 block font-bold uppercase leading-none">Dias</span>
+                </div>
+              </div>
+
+              {/* Weight info */}
+              <div className="flex justify-between items-center bg-zinc-900/50 rounded-lg p-2">
+                <div>
+                  <span className="text-[9px] text-zinc-400 font-bold uppercase">Peso</span>
+                  <div className="text-xs font-bold text-white">
+                    {user?.athleteProfile?.weightKg || 88}kg → {camp?.competition?.weightLimitKg || 82}kg
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-black text-red-400">
+                    -{Math.round((user?.athleteProfile?.weightKg || 88) - (camp?.competition?.weightLimitKg || 82))}kg
+                  </span>
+                  <span className="text-[8px] text-zinc-550 block font-bold uppercase leading-none">Faltam</span>
                 </div>
               </div>
 
