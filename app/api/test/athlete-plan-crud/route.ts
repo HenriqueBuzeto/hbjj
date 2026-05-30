@@ -5,7 +5,20 @@ export const dynamic = 'force-dynamic'
 
 export async function POST() {
   try {
-    const testUserId = 'test-crud-validation-' + Date.now()
+    // Create or get a test user
+    const testUser = await prisma.user.upsert({
+      where: { email: 'test-crud@example.com' },
+      create: {
+        email: 'test-crud@example.com',
+        name: 'Test CRUD User',
+        passwordHash: 'test',
+        role: 'athlete',
+        plan: 'free',
+      },
+      update: {},
+    })
+
+    const testUserId = testUser.id
     
     // Test INSERT - Create a plan profile
     const planProfile = await prisma.athletePlanProfile.create({
