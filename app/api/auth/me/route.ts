@@ -34,7 +34,9 @@ export async function GET(request: Request) {
 
     // Integrate profile data into user object
     const integratedUser = {
-      ...user,
+      id: user.id,
+      email: user.email,
+      name: user.name || 'Atleta',
       belt: user.jiuJitsuProfile?.belt || null,
       weight: user.athleteProfile?.currentWeightKg || null,
       competitionWeightLimit: user.jiuJitsuProfile?.weightCategory || null,
@@ -54,8 +56,13 @@ export async function GET(request: Request) {
       photos: [],
       chatHistory: [],
       badges: [],
+      // Include profile data directly
+      athleteProfile: user.athleteProfile,
+      jiuJitsuProfile: user.jiuJitsuProfile,
+      nutritionTargets: user.nutritionTargets,
     }
 
+    console.log('[Auth/Me] Returning integrated user:', integratedUser)
     return NextResponse.json({ user: integratedUser })
   } catch (error: any) {
     console.error('Get user error:', error)
