@@ -39,7 +39,6 @@ const AlimentacaoPage = () => {
       if (!res.ok) throw new Error('Failed to fetch nutrition');
       return res.json();
     },
-    enabled: !!session,
   });
 
   // Adicionar refeição
