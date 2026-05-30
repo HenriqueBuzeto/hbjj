@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
 
     const formData = await request.formData()
     const file = formData.get('file') as File

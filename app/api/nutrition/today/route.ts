@@ -16,7 +16,7 @@ export async function GET(request: Request) {
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
     const today = new Date()
     const start = startOfDay(today)
     const end = endOfDay(today)

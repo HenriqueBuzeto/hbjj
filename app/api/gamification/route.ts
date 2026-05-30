@@ -15,7 +15,7 @@ export async function GET(request: Request) {
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
 
     const profile = await prisma.gamificationProfile.findUnique({
       where: { userId },

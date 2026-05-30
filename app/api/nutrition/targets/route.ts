@@ -16,7 +16,7 @@ export async function PUT(request: Request) {
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
 
     const body = await request.json()
     const validatedData = nutritionTargetsSchema.parse(body)
@@ -59,7 +59,7 @@ export async function GET(request: Request) {
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
 
     const targets = await prisma.nutritionTargets.findUnique({
       where: { userId },

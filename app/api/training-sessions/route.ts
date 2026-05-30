@@ -15,7 +15,7 @@ export async function GET(request: Request) {
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
     const { searchParams } = new URL(request.url)
     const campId = searchParams.get('campId')
     const startDate = searchParams.get('startDate')
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const userId = authSession.user.id
+    const userId = authsession.id
 
     const body = await request.json()
     const validatedData = trainingSessionSchema.parse(body)

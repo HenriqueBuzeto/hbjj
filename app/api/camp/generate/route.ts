@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
 
     if (!userId) {
       return NextResponse.json(

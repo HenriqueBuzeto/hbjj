@@ -15,7 +15,7 @@ export async function GET(request: Request) {
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
 
     // Get all badges
     const allBadges = await prisma.badge.findMany()

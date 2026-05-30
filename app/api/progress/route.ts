@@ -15,7 +15,7 @@ export async function GET(request: Request) {
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
     const { searchParams } = new URL(request.url)
     const days = parseInt(searchParams.get('days') || '30')
 
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
 
     const body = await request.json()
     const {

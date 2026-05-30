@@ -20,10 +20,10 @@ export async function PUT(request: Request) {
     const validatedData = athleteProfileSchema.parse(body)
 
     const profile = await prisma.athleteProfile.upsert({
-      where: { userId: session.user.id },
+      where: { userId: session.id },
       update: validatedData,
       create: {
-        userId: session.user.id,
+        userId: session.id,
         ...validatedData,
       },
     })
@@ -58,7 +58,7 @@ export async function GET(request: Request) {
     }
 
     const profile = await prisma.athleteProfile.findUnique({
-      where: { userId: session.user.id },
+      where: { userId: session.id },
     })
 
     if (!profile) {

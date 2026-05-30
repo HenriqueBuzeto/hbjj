@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
 
     const body = await request.json()
     const {
