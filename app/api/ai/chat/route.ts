@@ -74,7 +74,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const userId = session.user.id
+    const userId = session.id
 
     // Rate limit based on user ID
     const rateLimitResult = rateLimit({
