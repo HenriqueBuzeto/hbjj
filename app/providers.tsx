@@ -4,7 +4,6 @@ import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider } from '@/context/AppContext';
 import ToastContainer from '@/components/common/ToastContainer';
-import SessionProvider from '@/components/providers/SessionProvider';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,13 +16,11 @@ const queryClient = new QueryClient({
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
-      <QueryClientProvider client={queryClient}>
-        <AppProvider>
-          {children}
-          <ToastContainer />
-        </AppProvider>
-      </QueryClientProvider>
-    </SessionProvider>
+    <QueryClientProvider client={queryClient}>
+      <AppProvider>
+        {children}
+        <ToastContainer />
+      </AppProvider>
+    </QueryClientProvider>
   );
 }
